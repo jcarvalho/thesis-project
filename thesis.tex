@@ -7,7 +7,7 @@
 \title{LongXact: Making Long-Lived Transactions Easier to Develop}
 
 %% Title
-\author{João Carvalho}
+\author{João Pedro Carvalho}
 \institute{Técnico de Lisboa/Universidade Técnica de Lisboa
 \email{joao.pedro.carvalho@ist.utl.pt}}
 \maketitle
@@ -53,27 +53,60 @@ Isolation breach, keep a paralel domain copy, or add logic to the
 domain.
 
      - Quebra de isolamento, ou manter uma copia paralela ao dominio
-     (ou aumentar o dominio para contemplar o estado intermedio)
+     (ou aumentar o dominio para contemplar o estado 
 
 \subsection{Applications of LLTs}
 
 \subsection{Database Management Systems}
 
+*Explain how long-lived transactions are typically implemented in DBMS's*
+
 \subsection{Workflow Systems}
 
+*Explain common use cases of LLT's on Workflow systems, and why are
+they so important*
+
 \subsection{Object-Oriented}
+
+*Talk about ORM's in Object Oriented systems, such as Hibernate*
+
+*Talk about the Fenix Framework, how it implements a Persistent STM,
+mention that the Framework brings Strict Serializability to a
+'transparent' programming model* \cite{fernandes2011strict} 
+\cite{guerraoui2008correctness} \cite{cachopo2006versioned}
+
+*Talk about how this project aims at extending the FF model to support LLT's*
 
 \section{Related Work}
 
 \subsection{Database world}
 
+*Mention classic books*
+
+*Mention Martin Fowler's patterns \cite{fowler2003patterns}*
+
+*Talk about isolation levels*
+
 \subsection{Workflow Management Systems}
 
+*Sagas* \cite{garcia1987sagas}
+
+*Compensations*
+
+*Exception Handling systems*
+
+*Explain why those solutions are not good, since they *may* break ACI
+of the ACID model*
+
 \subsection{Object-Relational Mappings}
+
+*Talk about how ORM's handle transactions, i.e. Hibernate*
 
 \section{Solution Architecture}
 
 In this section I will describe the planned architecture 
+
+\subsection{Persistent Software Transactional Memory}
 
 \subsection{Fenix Framework}
 
@@ -82,6 +115,11 @@ core, plus JVSTM, making it agnostic to the specific persistence
 backend in use. 
 
 \section{Evaluation}
+
+The final evaluation of this project will be measured in terms of:
+- Programmer effort needed to use LLT's
+- Performance, throughput, Commit/Abort ratios, interleaving LLTs with
+'regular' transactions
 
 \section{Conclusion}
 
