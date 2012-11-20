@@ -41,6 +41,11 @@ Long-Lived Transactions were first described in
 weeks''\cite{gray1981transaction}. At the time, the author said that the
 solution for this 
 
+In this project, I aim at adding support for Long-Lived Transactions
+in applications with Rich Domain Models.
+Rich Domain Models are ``An object model of the domain that
+incorporates both behavior and data.``, as described by \cite{fowler2003patterns}.
+
 \section{Long-Lived Transactions}
 
 \subsection{What are Long-Lived Transactions?}
@@ -76,16 +81,6 @@ Workflow systems
 *Explain common use cases of LLT's on Workflow systems, and why are
 they so important*
 
-\subsection{Object-Oriented}
-
-*Talk about ORM's in Object Oriented systems, such as Hibernate*
-
-*Talk about the Fenix Framework, how it implements a Persistent STM,
-mention that the Framework brings Strict Serializability to a
-'transparent' programming model* \cite{fernandes2011strict} 
-\cite{guerraoui2008correctness} \cite{cachopo2006versioned}
-
-*Talk about how this project aims at extending the FF model to support LLT's*
 
 \section{Related Work}
 
@@ -121,6 +116,19 @@ of the ACID model*
 \subsection{Object-Relational Mappings}
 
 *Talk about how ORM's handle transactions, i.e. Hibernate*
+
+\subsection{Object-Oriented}
+
+*Talk about ORM's in Object Oriented systems, such as Hibernate*
+
+*Talk about the Fenix Framework, how it implements a Persistent STM,
+mention that the Framework brings Strict Serializability to a
+'transparent' programming model* \cite{fernandes2011strict} 
+\cite{guerraoui2008correctness} \cite{cachopo2006versioned}
+
+*Talk about how this project aims at extending the FF model to support LLT's*
+
+\subsection{STM's}
 
 \section{Solution Architecture}
 
