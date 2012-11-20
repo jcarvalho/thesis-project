@@ -16,7 +16,7 @@
 
 \begin{abstract}
 Over the past years, Software Transactional Memories have become more
-and more popular, growing to be more than a research topic. On top of
+and more popular, growing to be something more than simply a research topic. On top of
 that, the concept has been extended to encompass persistence, so
 the concept of Persistent Software Transactional Memories was born. In
 this thesis, I propose an extension to PSTM's in order to support the
@@ -45,6 +45,11 @@ solution for this
 
 \subsection{What are Long-Lived Transactions?}
 
+*Course creation example*
+
+Mention here that multiple users will be able to *see* the
+transactional context?
+
 \subsection{Why are they difficult to implement?}
 
 Mention Tx Checks in the middle of regular application code.
@@ -52,8 +57,8 @@ Mention Tx Checks in the middle of regular application code.
 Isolation breach, keep a paralel domain copy, or add logic to the
 domain.
 
-     - Quebra de isolamento, ou manter uma copia paralela ao dominio
-     (ou aumentar o dominio para contemplar o estado 
+This section should present only general difficulties, each individual
+sub-section of (3)
 
 \subsection{Applications of LLTs}
 
@@ -62,6 +67,11 @@ domain.
 *Explain how long-lived transactions are typically implemented in DBMS's*
 
 \subsection{Workflow Systems}
+
+Workflow Managements Systems have seen many developments over the last
+years.
+
+Workflow systems 
 
 *Explain common use cases of LLT's on Workflow systems, and why are
 they so important*
@@ -85,11 +95,21 @@ mention that the Framework brings Strict Serializability to a
 
 *Mention Martin Fowler's patterns \cite{fowler2003patterns}*
 
+*Relaxation of transactional properties*
+
+*Several Papers: \cite{hagmann1991implementing} \cite{garcia1987sagas}
+\cite{salem1989altruistic}
+
 *Talk about isolation levels*
+
+*Mention that the best implementations of LLT's at the database level
+provide only Serializability at best*
 
 \subsection{Workflow Management Systems}
 
 *Sagas* \cite{garcia1987sagas}
+
+\cite{798492}
 
 *Compensations*
 
