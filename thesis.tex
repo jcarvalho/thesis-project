@@ -1,6 +1,7 @@
 \documentclass{llncs}
 \usepackage[utf8]{inputenc}
 \usepackage{cite}
+\usepackage{listings}
 %
 \begin{document}
 
@@ -133,6 +134,28 @@ mention that the Framework brings Strict Serializability to a
 \section{Solution Architecture}
 
 In this section I will describe the planned architecture 
+
+\lstset{language=Java,frame=single,caption={Sample
+  implementation of a method that runs inside a Long Lived
+  Transaction}}
+\begin{lstlisting}
+
+public CourseCreation(Department department) {
+  this.setDepartment(department);
+  this.setNewCourse(new Course());
+  department.addCourse(this.getNewCourse());
+}
+
+@Step
+public void createNewCourse(String courseName) {
+  this.getNewCourse().setName(courseName);
+}
+
+@Step(last = true)
+public void setBibliography(Publication[] bibliography) {
+  this.getNewCourse().setBibliography(bibliography);
+}
+\end{lstlisting}
 
 \subsection{Persistent Software Transactional Memory}
 
