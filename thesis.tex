@@ -83,7 +83,42 @@ in the applications of many education institutions.
 \end{figure}
 
 In the domain model presented in Figure~\ref{fig:courseDomain}, we
-have a simplification of the Course concept
+present a simplification of the Course's attributes. A course belongs
+to a department, has a name, its objectives, the credits granted upon
+completion, and the recommended bibliography. The domain is deemed to
+be consistent only if all attributes of Course have a defined value,
+and each course must have a department. Each department is responsible
+for managing its courses, meaning that it is up to someone who belongs
+to the department to start the process of creating new courses.
+
+The pseudo-code in Listing~\ref{fig:courseCreation} implements the
+business operation of creating a new course. Assume that {\bf
+  department} is inferred from the user performing the operation. This
+operation should execute transactionally.
+
+\begin{figure}
+
+\lstset{language=Java,
+basicstyle=\ttfamily,
+stepnumber=2,
+numbersep=10pt,
+tabsize=4,
+frame=single,
+caption={Pseudo-Code for the
+    creation of a new course. A new Course is created, associated with
+  its department, and its attributes are filled.},
+label={fig:courseCreation},
+captionpos=b}
+\begin{lstlisting}
+Course course = new Course();
+department.addCourse(course);
+course.setName(name);
+course.setObjectives(objectives);
+course.setCredits(credits);
+course.setBibliography(bibliography);
+\end{lstlisting}
+
+\end{figure}
 
 Mention here that multiple users will be able to *see* the
 transactional context?
@@ -115,6 +150,30 @@ in several steps).
   on that portion of the domain, since it must filter objects that are
   still in an inconsistent state
 \end{enumerate}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\begin{class}[text width=4.5cm]{Course}{0.5,0}
+\attribute{name : String}
+\attribute{objectives : String}
+\attribute{credits : int}
+\attribute{bibliography : Publication[]}
+\attribute{status : \{Draft, Published\}}
+\end{class}
+
+\begin{class}[text width=3cm]{Department}{7.5,-1}
+\end{class}
+
+\association{Department}{}{1}{Course}{}{*}
+
+\end{tikzpicture}
+
+\caption{Domain Model with state representation} 
+\label{fig:courseDomainState}
+
+\end{figure}
 
 All the approaches presented above are deemed unacceptable, since they
 require explicit intervention by the programmer. 
