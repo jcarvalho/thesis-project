@@ -50,6 +50,7 @@ incorporates both behavior and data.``, as described by \cite{fowler2003patterns
 \section{Long-Lived Transactions}
 
 \subsection{What are Long-Lived Transactions?}
+\label{sec:what}
 
 *Course creation example*
 
@@ -58,23 +59,47 @@ transactional context?
 
 \subsection{Why are they difficult to implement?}
 
-Web frameworks provide 
+Web frameworks provide a wide range of features to the
+programmer. 
 
-Mention Tx Checks in the middle of regular application code.
+Transactional support, however, is still somewhat raw in most
+Frameworks. Typically, transactions are handled by some database
+beneath them, so the framework is just a thin layer, delegating all
+the work.
 
-Isolation breach, keep a paralel domain copy, or add logic to the
-domain.
+Revisiting the example presented in \ref{sec:what}, there are several
+ways to implement the second case (in which user interaction is made
+in several steps).
+
+\begin{enumerate}
+\item Keeping a database transaction open during all the steps of the
+  operation
+
+\item Create a parallel representation of the objects that are being
+  manipulated, store them outside the domain, and applying the changes
+  only in the last interaction
+
+\item Change the domain model, to represent the consistency state of
+  the objects being manipulated. This affects the code that operates
+  on that portion of the domain, since it must filter objects that are
+  still in an inconsistent state
+\end{enumerate}
+
+All the approaches presented above are deemed unacceptable, since they
+require explicit intervention by the programmer. 
 
 This section should present only general difficulties, each individual
 sub-section of (3)
 
 \subsection{Applications of LLTs}
 
-\subsection{Database Management Systems}
+Long-Lived Transactions are useful in many contexts, 
+
+\subsubsection{Database Management Systems}
 
 *Explain how long-lived transactions are typically implemented in DBMS's*
 
-\subsection{Workflow Systems}
+\subsubsection{Workflow Systems}
 
 Workflow Managements Systems have seen many developments over the last
 years.
@@ -141,10 +166,30 @@ mention that the Framework brings Strict Serializability to a
 *Talk about how this project aims at extending the FF model to support LLT's*
 
 \subsection{STM's}
+\label{sec:stm}
+
 
 \section{Solution Architecture}
 
-In this section I will describe the planned architecture 
+In this section I will describe the architecture of my proposed
+solution, as well as a small introduction to the Fénix Framework
+\cite{fernandes2011strict}, in which it will be implemented.
+
+\subsection{Fenix Framework}
+
+STMs, PSTMs, DML
+
+\ref{sec:stm}
+
+Describe that the solution will be build on top of the Fenix Framework
+core, plus JVSTM, making it agnostic to the specific persistence
+backend in use. 
+
+\subsection{Transactional Contexts}
+
+The basic building block 
+
+\subsection{Programming Model}
 
 \lstset{language=Java,frame=single,caption={Sample
   implementation of a method that runs inside a Long Lived
@@ -167,14 +212,6 @@ public void setBibliography(Publication[] bibliography) {
   this.getNewCourse().setBibliography(bibliography);
 }
 \end{lstlisting}
-
-\subsection{Persistent Software Transactional Memory}
-
-\subsection{Fenix Framework}
-
-Describe that the solution will be build on top of the Fenix Framework
-core, plus JVSTM, making it agnostic to the specific persistence
-backend in use. 
 
 \section{Evaluation}
 
