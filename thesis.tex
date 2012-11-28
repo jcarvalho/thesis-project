@@ -1,5 +1,7 @@
 \documentclass{llncs}
 \usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage[simplified]{pgf-umlcd}
 \usepackage{cite}
 \usepackage{listings}
 %
@@ -52,7 +54,36 @@ incorporates both behavior and data.``, as described by \cite{fowler2003patterns
 \subsection{What are Long-Lived Transactions?}
 \label{sec:what}
 
-*Course creation example*
+As previously described, Long-Lived Transactions are transactions with
+a lifetime larger than a typical database transaction. In order to
+better understand this concept, consider the following example, found
+in the applications of many education institutions.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\begin{class}[text width=4.5cm]{Course}{0.5,0}
+\attribute{name : String}
+\attribute{objectives : String}
+\attribute{credits : int}
+\attribute{bibliography : Publication[]}
+\end{class}
+
+\begin{class}[text width=3cm]{Department}{7.5,-0.85}
+\end{class}
+
+\association{Department}{}{1}{Course}{}{*}
+
+\end{tikzpicture}
+
+\caption{Sample Domain Model in UML} 
+\label{fig:courseDomain}
+
+\end{figure}
+
+In the domain model presented in Figure~\ref{fig:courseDomain}, we
+have a simplification of the Course concept
 
 Mention here that multiple users will be able to *see* the
 transactional context?
