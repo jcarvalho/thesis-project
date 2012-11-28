@@ -91,17 +91,19 @@ and each course must have a department. Each department is responsible
 for managing its courses, meaning that it is up to someone who belongs
 to the department to start the process of creating new courses.
 
+Note that the creation of a new course should be executed
+transactionally, since it is not desired that other users of the
+system are able to see a course in an inconsistent state (either not
+connected to any departement and/or without all attributes properly defined).
+
 The pseudo-code in Listing~\ref{fig:courseCreation} implements the
 business operation of creating a new course. Assume that {\bf
-  department} is inferred from the user performing the operation. This
-operation should execute transactionally.
-
-\begin{figure}
+  department} is inferred from the user performing the operation. 
 
 \lstset{language=Java,
 basicstyle=\ttfamily,
 stepnumber=2,
-numbersep=10pt,
+numbersep=9pt,
 tabsize=4,
 frame=single,
 caption={Pseudo-Code for the
@@ -118,10 +120,73 @@ course.setCredits(credits);
 course.setBibliography(bibliography);
 \end{lstlisting}
 
-\end{figure}
+There are several ways to implement this operation. I will now
+describe two common scenarios for said implementation.
 
-Mention here that multiple users will be able to *see* the
-transactional context?
+\subsubsection{Business Transaction in a single interaction}
+
+A possible implementation (most likely, the simplest) of the course
+creation operation in a web application is to have a single page in
+which the user provides all the required information. Once the
+information is submitted, a new Course is created, associated with the
+department of the person performing the operation, and all its
+attributes are filled according to the information submitted by the
+user. The new object is then stored in the database, making it
+persistent and available for other users to view.
+
+In this scenario, in which all the information can be provided in a
+single user interaction, the transactional guarantees of the operation are
+assured by the underlying database (which is assumed to provide the
+classic transactional semantics \cite{gray1981transaction}), since the
+whole operation can be performed within the scope of a single database
+transaction.
+
+An important consequence of implementing the operation in a single
+database transaction is that the programmer can manipulate all the domain
+objects involved directly. The order in which the modifications to
+said objects are performed is irrelevant, as long as the domain is
+consistent when the transactions is committed. This is the semantics
+typically expected by a programmer of such applications: there may be
+instants in which some domain objects are in an inconsistent state
+(e.g. before defining the course's bibliography), however this
+inconsistent state will never be seen by the other users of the
+application. Those users will only see the fully created object once
+the operation is committed.
+
+\subsubsection{Business Transaction across multiple interactions}
+
+The model described in the previous scenario, while simple and easy to
+implement, may not be suited for every situation. Imagine that instead
+of four attributes, Course had 50 attributes. It would then be
+unfeasible to ask the user to fill everything out in a single web
+page, so the logical solution would be to split the various attributes
+in multiple pages, accounting for multiple interactions.
+
+Let us now assume that the creation of a course is made throughout
+three interactions. In the first interaction, the user selects the
+course's name, in the second interaction, the user introduces the
+objectives and credits, and in the final interaction, the user selects
+the bibliography, thus creating the course.
+
+At first glance, it would seem quite easy for a programmer to change
+the logic programmed in the first scenario, in order to meet the new
+requirements: the programmer would simply have to split the code
+performed in a single request into three smaller parts, one to be
+executed in each request.
+
+However, having three separate requests implies three different
+database transactions, breaking the atomicity and isolation of the
+operation. After handling the first request, the persisted domain
+would be in an inconsistent state (a course with no attributes but its
+name).
+
+The implementation of the business logic must then take this issue
+into account, since the programmer cannot write the updates directly
+on the domain, requiring manual handling.
+
+This scenario represents what was defined as a Long-Lived Transaction,
+in which the Business Operation had a larger lifetime that a single
+database transaction (in this particular case, three database transactions).
 
 \subsection{Why are they difficult to implement?}
 
