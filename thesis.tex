@@ -1,5 +1,4 @@
 \documentclass{llncs}
-\usepackage[utf8]{inputenc}
 \usepackage{tikz}
 \usepackage[simplified]{pgf-umlcd}
 \usepackage{cite}
@@ -10,8 +9,8 @@
 \title{LongXact: Making Long-Lived Transactions Easier to Develop}
 
 %% Title
-\author{João Pedro Carvalho}
-\institute{Técnico de Lisboa/Universidade Técnica de Lisboa
+\author{Jo\~{a}o Pedro Carvalho}
+\institute{T\'{e}cnico de Lisboa/Universidade T\'{e}cnica de Lisboa
 \email{joao.pedro.carvalho@ist.utl.pt}}
 \maketitle
 
@@ -190,17 +189,11 @@ database transaction (in this particular case, three database transactions).
 
 \subsection{Why are they difficult to implement?}
 
-Web frameworks provide a wide range of features to the
-programmer. 
+In this multiple interaction scenario, special care must be taken when
+implementing the operation. Like mentioned above, one cannot simple
+split the code used in the first scenario.
 
-Transactional support, however, is still somewhat raw in most
-Frameworks. Typically, transactions are handled by some database
-beneath them, so the framework is just a thin layer, delegating all
-the work.
-
-Revisiting the example presented in \ref{sec:what}, there are several
-ways to implement the second case (in which user interaction is made
-in several steps).
+The programmer has then several choices for the implementation:
 
 \begin{enumerate}
 \item Keeping a database transaction open during all the steps of the
@@ -248,7 +241,9 @@ sub-section of (3)
 
 \subsection{Applications of LLTs}
 
-Long-Lived Transactions are useful in many contexts, 
+Even though the example I just presented was targeted at a system with
+a rich domain model, there are several other applications of
+Long-Lived Transactions.
 
 \subsubsection{Database Management Systems}
 
@@ -293,6 +288,8 @@ Transactional Memories, and how they cope with short lived transactions.
 provide only Serializability at best*
 
 \subsection{Workflow Management Systems}
+
+\cite{alonso1996advanced}
 
 *Sagas* \cite{garcia1987sagas}
 
