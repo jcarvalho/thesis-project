@@ -209,6 +209,38 @@ The programmer has then several choices for the implementation:
   still in an inconsistent state
 \end{enumerate}
 
+It should be clear that any of those solutions is far from trivial,
+has some serious consequences, and is an unnecessary burden to the
+programmer. 
+
+\subsubsection{Keeping a database transaction open}
+
+Given that atomicity and isolation are broken due to the fact that
+each interaction with the user is done within its own database
+transaction, one could think the solution would be to keep the
+database transaction open during the whole business transaction.
+
+This approach has several disadvantages, due to the fact that 
+
+\subsubsection{Parallel Representation of the domain}
+
+In this approach, a series of objects similar to the domain objects
+are created, and must be managed manually, kept in the user's session
+context, outside the domain.
+
+As the complexity of the domain, and the number of objects the
+operation affects grow, the harder it becomes for the programmer to
+manually. Ultimately, there is a copy of the whole of the domain
+stored in the user's session, waiting for the last transaction to copy
+all the information back to the domain transactionally.
+
+This is the opposite of what would be desirable to the programmer, she
+should be able to operate directly on the domain.
+
+
+
+\subsubsection{Changing the domain model}
+
 \begin{figure}
 \centering
 \begin{tikzpicture}
@@ -233,11 +265,11 @@ The programmer has then several choices for the implementation:
 
 \end{figure}
 
-All the approaches presented above are deemed unacceptable, since they
-require explicit intervention by the programmer. 
-
-This section should present only general difficulties, each individual
-sub-section of (3)
+All this effort makes Long-Lived Transactions a concept that is very
+hard to implement, promotes bad software engineering practices, and is
+difficult to reason about. My thesis is that the support for
+Long-Lived Transactions should be transparent, and at an
+infrastructural level, relieving the programmer from this burden.
 
 \subsection{Applications of LLTs}
 
