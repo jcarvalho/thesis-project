@@ -3,6 +3,7 @@
 \usepackage[simplified]{pgf-umlcd}
 \usepackage{cite}
 \usepackage{listings}
+\usepackage{paralist}
 %
 \begin{document}
 
@@ -309,15 +310,6 @@ against the proprietary API, making it very hard to change and
 maintain. All these factors contribute to make this approach inadmissible for
 most cases.
 
-\subsubsection{}
-
-All this effort makes Long-Lived Transactions a concept that is very
-hard to implement, promotes bad software engineering practices
-(replication, code scattering, etc), and is
-difficult to reason about. My thesis is that the support for
-Long-Lived Transactions should be transparent, and at an
-infrastructural level, relieving the programmer from this burden.
-
 \subsection{Applications of LLTs}
 
 Even though the example I just presented was targeted at a system with
@@ -335,6 +327,15 @@ Workflow Management Systems are another area in which Long-Lived
 Transactions are interesting. Workflow processes are inherently
 Long-Lived. Each activity can be seen as an interaction in the example
 presented above.
+
+\subsection{Objectives}
+
+All this effort makes Long-Lived Transactions a concept that is very
+hard to implement, promotes bad software engineering practices
+(replication, code scattering, etc), and is
+difficult to reason about. My thesis is that the support for
+Long-Lived Transactions should be transparent, and at an
+infrastructural level, relieving the programmer from this burden.
 
 \section{Related Work}
 
@@ -422,13 +423,6 @@ by a single database transaction) and transactional. With this
 persistent context, the programmer no longer needs to rely on the
 database to provide the transactional semantics of the operation. 
 
-Figure~\ref{fig:transactionalContext} presents the conceptual model of the
-Transactional Context. Since it is a first-class entity, it can be
-manipulated just like any other domain object. Its purpose is to keep
-all the changes 
-
-In order for the behaviour to be 
-
 \begin{figure}
 \centering
 \begin{tikzpicture}
@@ -456,11 +450,48 @@ node[near start, above, black]{1} (Log)
 node[near end, below, black]{1};
 \end{tikzpicture}
 
-\caption{Domain Model with state representation} 
+\caption{Transactional Context} 
 \label{fig:transactionalContext}
 
 \end{figure}
 
+Figure~\ref{fig:transactionalContext} presents the conceptual model of the
+Transactional Context. Since it is a first-class entity, it can be
+manipulated just like any other domain object. Its purpose is to keep
+all the changes made to the domain objects during the transaction,
+keeping those changes isolated from code executing outside this
+context.
+
+The Transactional Context has two sets of {\bf Log}s representing both
+the read set and the write set of the transaction. A Log contains a
+reference to the original object it refers to, and a
+Transactional-Local copy of the value of the object. In case of a Log
+for a read operation, the value is a snapshot of the object when it
+was first read. In the Log for a write operation, the log will retain
+the value being written.
+
+Any read operation will read the value stored in the Log for that
+particular object (whether it has been modified outside the context or
+not), or create a new Log entry if it's the first time
+the object is being accessed. A write operation will behave similarly,
+writing the new value to. It is important to note that there is at
+most one Log entry per object. When a write to an object that has been
+previously read occurs, its corresponding Log entry is promoted from
+the Read Set to the Write Set.
+
+Collaboration from the methods that get/set values of the domain
+objects is required, since those methods must be aware of the presence
+of the transactional context. Depending on whether the method performs
+a read or write operation, it must access the corresponding Log of the
+current context in order to read/modify the snapshot/copy of the
+object's attributes.
+
+Transactional contexts can be either aborted or committed. Aborting a
+transactional context simply discards all associated Log entries,
+while committing atomically merges the Write Set with the domain. This
+operation must obey to the same consistency rules as any regular
+transaction, all objects in both Sets must be in a consistent state
+with the objects outside the context.
 
 \subsection{Fenix Framework}
 
@@ -475,6 +506,57 @@ backend in use.
 
 
 \subsection{Programming Model}
+
+The previously presented concept of Transactional Context as the basic
+building blocks for Long-Lived Transactions. However, Transactional
+Contexts are not business operations.
+
+The main idea is that every business operation that has transactional
+requirements should execute within a transactional context. But due to
+the fact that the operation may have several steps, one must keep
+track of Transactional Context, so it is used in all steps of the
+operation. 
+
+Since keeping track of the context can be cumbersome, and should be
+done transparently, a new concept is introduced: {\bf Transactional
+  Business Operation} (TBO). As shown in Figure~\ref{fig:TBO}, a TBO
+not only is a first-class entity that represents a particular business
+operation, but also holds its transactional context. The TBO is then
+responsible for 
+\begin{inparaenum}[\itshape 1\upshape)]
+\item Managing the life-cycle of the Transactional Context
+\item Ensuring that the several steps of the operation execute within
+  the operation's context.
+\end{inparaenum}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\begin{abstractclass}[text width=6cm]{TransactionalBusinessOperation}{0,0}
+\operation{end() : void}
+\operation{abort() : void}
+\end{abstractclass}
+
+\begin{class}[text width=4cm]{TransactionalContext}{7,-0.7}
+\end{class}
+
+\association{TransactionalBusinessOperation}{context}{}{TransactionalContext}{}{}
+
+\end{tikzpicture}
+
+\caption{Transactional Business Operation} 
+\label{fig:TBO}
+
+\end{figure}
+
+criação do TBO, gestão do life-cycle, exemplo do Get/set do TC
+
+obtenção do TBO
+
+Due to this fact, Transactional Contexts may be seen as 'Low-Level'
+API, while Transactional Business Operations may be seen as the
+'High-Level' API.
 
 \lstset{language=Java,frame=single,caption={Sample
   implementation of a method that runs inside a Long Lived
