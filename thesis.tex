@@ -50,6 +50,12 @@ incorporates both behavior and data.``, as described by \cite{fowler2003patterns
 
 \section{Long-Lived Transactions}
 
+In this section I provide a concrete example of a Long-Lived Transaction,
+aiming to better explain the concept, and to show how such
+transactions can be found among many applications. I then show why it
+is difficult for a programmer to implement a Long-Lived Transaction,
+attempting to motivate why a new approach is needed.
+
 \subsection{What are Long-Lived Transactions?}
 \label{sec:what}
 
@@ -237,9 +243,35 @@ all the information back to the domain transactionally.
 This is the opposite of what would be desirable to the programmer, she
 should be able to operate directly on the domain.
 
-
-
 \subsubsection{Changing the domain model}
+
+Now imagine that an additional requirement is added to the system: the
+user may be allowed to log off in the middle of the process, and when
+logging back in and continue the work where he left off. Additionally,
+anyone else in the user's department should be able to pick up where
+the original user left off. With these requirements, it becomes clear
+that simply storing a copy of the domain in session-local storage is
+not enough. 
+
+Web application containers already provide an application context,
+which could potentially solve this issue, however, there are no real
+guarantees that the data stored in that context will be kept for an
+arbitrarily large period of time (recall that our transaction may span
+several days or weeks), meaning that the intermediate data must be
+kept persistently, forcing the programmer to be concerned with this
+issue.
+
+A possible solution for this requirement is to change our domain
+model, by adding a new attribute to the objects being modified (in
+this case, Course, as shown in
+Figure~\ref{fig:courseDomainState}). The {\bf status} attribute
+indicates whether the course is in a consistent state (Published) or
+not (Draft). Adding this attribute has a cost, not only the domain is
+'polluted' with information that is not relevant to the object being
+modeled, but has impact on other functional code across the
+application, since course listings must filter out courses that are
+still in the Draft status, scattering the filtering code throughout
+the application.
 
 \begin{figure}
 \centering
@@ -264,6 +296,21 @@ should be able to operate directly on the domain.
 \label{fig:courseDomainState}
 
 \end{figure}
+
+\subsubsection{Other approaches}
+
+There are other approaches to Long-Lived Transactions, such as using
+the Database. There are some DBMSs that announce support for
+Long-Lived Transactions, such as Oracle's Workspace Manager. However,
+such support is not standardized, their API's are proprietary,
+rendering Web frameworks unusable in those cases (since they generally 
+support only the SQL standard), forcing the application to be written
+against the proprietary API, making it very hard to change and
+maintain. All these factors contribute to make this approach inadmissible for
+most cases.
+
+
+
 
 All this effort makes Long-Lived Transactions a concept that is very
 hard to implement, promotes bad software engineering practices, and is
