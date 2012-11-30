@@ -46,7 +46,7 @@ solution for this
 In this project, I aim at adding support for Long-Lived Transactions
 in applications with Rich Domain Models.
 Rich Domain Models are ``An object model of the domain that
-incorporates both behavior and data.``, as described by \cite{fowler2003patterns}.
+incorporates both behaviour and data.``, as described by \cite{fowler2003patterns}.
 
 \section{Long-Lived Transactions}
 
@@ -309,11 +309,11 @@ against the proprietary API, making it very hard to change and
 maintain. All these factors contribute to make this approach inadmissible for
 most cases.
 
-
-
+\subsubsection{}
 
 All this effort makes Long-Lived Transactions a concept that is very
-hard to implement, promotes bad software engineering practices, and is
+hard to implement, promotes bad software engineering practices
+(replication, code scattering, etc), and is
 difficult to reason about. My thesis is that the support for
 Long-Lived Transactions should be transparent, and at an
 infrastructural level, relieving the programmer from this burden.
@@ -326,18 +326,15 @@ Long-Lived Transactions.
 
 \subsubsection{Database Management Systems}
 
-*Explain how long-lived transactions are typically implemented in DBMS's*
+The example provided above is targeted at applications with a rich
+domain model, however 
 
 \subsubsection{Workflow Systems}
 
-Workflow Managements Systems have seen many developments over the last
-years.
-
-Workflow systems 
-
-*Explain common use cases of LLT's on Workflow systems, and why are
-they so important*
-
+Workflow Management Systems are another area in which Long-Lived
+Transactions are interesting. Workflow processes are inherently
+Long-Lived. Each activity can be seen as an interaction in the example
+presented above.
 
 \section{Related Work}
 
@@ -403,8 +400,67 @@ mention that the Framework brings Strict Serializability to a
 \section{Solution Architecture}
 
 In this section I will describe the architecture of my proposed
-solution, as well as a small introduction to the Fénix Framework
+solution, as well as a small introduction to the Fenix Framework
 \cite{fernandes2011strict}, in which it will be implemented.
+
+\subsection{Transactional Contexts}
+
+The main goal of this solution is to relieve programmers of the burden
+of dealing with Long-Lived Transactions, making the effort needed to
+program one similar to the effort of programming a regular
+transaction. So, what does the single interaction scenario has that
+makes it so easy to program? It has a single transactional context
+that spans the whole operation (provided by the database transaction,
+given that they have the same lifespan). In the second scenario the
+database transaction was shorter than the whole operation, so the
+context was lost in each step.
+
+The main concept of the proposed architecture is then the {\bf
+  Transactional Context}. It is represented as a first-class domain entity in our
+rich domain model, making it persistent (unlike the context provided
+by a single database transaction) and transactional. With this
+persistent context, the programmer no longer needs to rely on the
+database to provide the transactional semantics of the operation. 
+
+Figure~\ref{fig:transactionalContext} presents the conceptual model of the
+Transactional Context. Since it is a first-class entity, it can be
+manipulated just like any other domain object. Its purpose is to keep
+all the changes 
+
+In order for the behaviour to be 
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\begin{class}[text width=4cm]{TransactionalContext}{0,0}
+\end{class}
+
+\begin{class}[text width=1.2cm,minimum height=5em]{Log}{4,-2}
+\end{class}
+
+\begin{abstractclass}[text width=3cm]{DomainObject}{8,0}
+\end{abstractclass}
+
+\draw[umlcd style school] (DomainObject) |-node[below, sloped,
+black]{object} (Log);
+
+\draw[umlcd style school] (DomainObject) -| node[above, black]
+{value} (Log);
+
+\draw[umlcd style school] (TransactionalContext) |- node[below, black]
+{readSet} (Log);
+
+\draw[umlcd style school] (TransactionalContext) --
+node[near start, above, black]{1} (Log) 
+node[near end, below, black]{1};
+\end{tikzpicture}
+
+\caption{Domain Model with state representation} 
+\label{fig:transactionalContext}
+
+\end{figure}
+
 
 \subsection{Fenix Framework}
 
@@ -416,9 +472,7 @@ Describe that the solution will be build on top of the Fenix Framework
 core, plus JVSTM, making it agnostic to the specific persistence
 backend in use. 
 
-\subsection{Transactional Contexts}
 
-The basic building block 
 
 \subsection{Programming Model}
 
@@ -439,7 +493,8 @@ public void createNewCourse(String courseName) {
 }
 
 @Step(last = true)
-public void setBibliography(Publication[] bibliography) {
+public void setBibliography
+(Publication[] bibliography) {
   this.getNewCourse().setBibliography(bibliography);
 }
 \end{lstlisting}
