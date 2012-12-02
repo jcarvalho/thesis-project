@@ -241,7 +241,12 @@ each interaction with the user is done within its own database
 transaction, one could think the solution would be to keep the
 database transaction open during the whole business transaction.
 
-This approach has several disadvantages, due to the fact that 
+However, most modern RDBMs do not cope well with transactions that are
+open for arbitrarily large periods of time, since a long lived
+database transaction may limit concurrency, cause timeouts and
+deadlocks, starve the database's connection pool. All these factors
+contribute to making this approach highly undesirable, making the
+programmer seek alternative approaches.
 
 \subsubsection{Parallel Representation of the domain}
 
