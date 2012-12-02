@@ -44,10 +44,24 @@ Long-Lived Transactions were first described in
 weeks''\cite{gray1981transaction}. At the time, the author said that the
 solution for this 
 
+-- starts here for now --
+
 In this project, I aim at adding support for Long-Lived Transactions
 in applications with Rich Domain Models.
 Rich Domain Models are ``An object model of the domain that
-incorporates both behaviour and data.``, as described by \cite{fowler2003patterns}.
+incorporates both behaviour and data.``, as described by
+\cite{fowler2003patterns}, meaning that domain objects hold both their
+data and the business logic that manipulates them, as opposed
+ to Anemic Domain Model, in which the domain objects simply 
+contain data, and the business operations are handled by a separate 
+Service layer. Also, in a Rich Domain Model, each domain object
+typically has an arbitrarily complex web of associations, multivalued
+attributes, inheritance, and other Object Oriented design patterns.
+
+My focus throughout this project will be on applications in which
+the Domain Objects are persistent, transactionally updated, and 
+handled transparently at an infrastructural level (meaning the
+programmer may be mostly unaware of the persistence layer).
 
 \section{Long-Lived Transactions}
 
