@@ -10,25 +10,26 @@
 \title{LongXact: Making Long-Lived Transactions Easier to Develop}
 
 %% Title
-\author{Jo\~{a}o Pedro Carvalho}
-\institute{T\'{e}cnico de Lisboa/Universidade T\'{e}cnica de Lisboa
-\email{joao.pedro.carvalho@ist.utl.pt}}
+\author{Jo\~{a}o Pedro Carvalho} \institute{T\'{e}cnico de
+  Lisboa/Universidade T\'{e}cnica de Lisboa
+  \email{joao.pedro.carvalho@ist.utl.pt}}
 \maketitle
 
 %% Abstract
 
 \begin{abstract}
-Over the past years, Software Transactional Memories have become more
-and more popular, growing to be something more than simply a research topic. On top of
-that, the concept has been extended to encompass persistence, so
-the concept of Persistent Software Transactional Memories was born. In
-this thesis, I propose an extension to PSTM's in order to support the
-concept of Long-Lived Transactions. Some research on the topic has
-been conducted in the field of Database Transactions and Workflow
-systems. My thesis is that supporting Long-Lived Transactions should
-be done at the infrastructural level on Persistent STM's, so this
-paper will describe how those systems can be extended to support
-Long-Lived Transactions.
+  Over the past years, Software Transactional Memories have become
+  more and more popular, growing to be something more than simply a
+  research topic. On top of that, the concept has been extended to
+  encompass persistence, so the concept of Persistent Software
+  Transactional Memories was born. In this thesis, I propose an
+  extension to PSTM's in order to support the concept of Long-Lived
+  Transactions. Some research on the topic has been conducted in the
+  field of Database Transactions and Workflow systems. My thesis is
+  that supporting Long-Lived Transactions should be done at the
+  infrastructural level on Persistent STM's, so this paper will
+  describe how those systems can be extended to support Long-Lived
+  Transactions.
 \end{abstract}
 
 %% Intro
@@ -39,37 +40,37 @@ For many years, enterprise applications were developed using
 two-tiered architectures. In such architectures, there was typically a
 mainframe with great computational power.
 
-Long-Lived Transactions were first described in
-1981 as ``[..] transactions with lifetimes of a few days or
-weeks''\cite{gray1981transaction}. At the time, the author said that the
-solution for this 
+Long-Lived Transactions were first described in 1981 as ``[..]
+transactions with lifetimes of a few days or
+weeks''\cite{gray1981transaction}. At the time, the author said that
+the solution for this
 
 -- starts here for now --
 
 In this project, I aim at adding support for Long-Lived Transactions
-in applications with Rich Domain Models.
-Rich Domain Models are ``An object model of the domain that
-incorporates both behaviour and data.``, as described by
-\cite{fowler2003patterns}, meaning that domain objects hold both their
-data and the business logic that manipulates them, as opposed
- to Anemic Domain Model, in which the domain objects simply 
-contain data, and the business operations are handled by a separate 
-Service layer. Also, in a Rich Domain Model, each domain object
-typically has an arbitrarily complex web of associations, multivalued
-attributes, inheritance, and other Object Oriented design patterns.
+in applications with Rich Domain Models.  Rich Domain Models are ``An
+object model of the domain that incorporates both behaviour and
+data.``, as described by \cite{fowler2003patterns}, meaning that
+domain objects hold both their data and the business logic that
+manipulates them, as opposed to Anemic Domain Model, in which the
+domain objects simply contain data, and the business operations are
+handled by a separate Service layer. Also, in a Rich Domain Model,
+each domain object typically has an arbitrarily complex web of
+associations, multivalued attributes, inheritance, and other Object
+Oriented design patterns.
 
-My focus throughout this project will be on applications in which
-the Domain Objects are persistent, transactionally updated, and 
-handled transparently at an infrastructural level (meaning the
-programmer may be mostly unaware of the persistence layer).
+My focus throughout this project will be on applications in which the
+Domain Objects are persistent, transactionally updated, and handled
+transparently at an infrastructural level (meaning the programmer may
+be mostly unaware of the persistence layer).
 
 \section{Long-Lived Transactions}
 
-In this section I provide a concrete example of a Long-Lived Transaction,
-aiming to better explain the concept, and to show how such
-transactions can be found among many applications. I then show why it
-is difficult for a programmer to implement a Long-Lived Transaction,
-attempting to motivate why a new approach is needed.
+In this section I provide a concrete example of a Long-Lived
+Transaction, aiming to better explain the concept, and to show how
+such transactions can be found among many applications. I then show
+why it is difficult for a programmer to implement a Long-Lived
+Transaction, attempting to motivate why a new approach is needed.
 
 \subsection{What are Long-Lived Transactions?}
 \label{sec:what}
@@ -80,14 +81,12 @@ better understand this concept, consider the following example, found
 in the applications of many education institutions.
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
+  \centering
+  \begin{tikzpicture}
 
 \begin{class}[text width=4.5cm]{Course}{0.5,0}
-\attribute{name : String}
-\attribute{objectives : String}
-\attribute{credits : int}
-\attribute{bibliography : Publication[]}
+  \attribute{name : String} \attribute{objectives : String}
+  \attribute{credits : int} \attribute{bibliography : Publication[]}
 \end{class}
 
 \begin{class}[text width=3cm]{Department}{7.5,-0.85}
@@ -97,7 +96,7 @@ in the applications of many education institutions.
 
 \end{tikzpicture}
 
-\caption{Sample Domain Model in UML} 
+\caption{Sample Domain Model in UML}
 \label{fig:courseDomain}
 
 \end{figure}
@@ -114,23 +113,18 @@ to the department to start the process of creating new courses.
 Note that the creation of a new course should be executed
 transactionally, since it is not desired that other users of the
 system are able to see a course in an inconsistent state (either not
-connected to any departement and/or without all attributes properly defined).
+connected to any departement and/or without all attributes properly
+defined).
 
 The pseudo-code in Listing~\ref{fig:courseCreation} implements the
 business operation of creating a new course. Assume that {\bf
-  department} is inferred from the user performing the operation. 
+  department} is inferred from the user performing the operation.
 
-\lstset{language=Java,
-basicstyle=\ttfamily,
-stepnumber=2,
-numbersep=9pt,
-tabsize=4,
-frame=single,
-caption={Pseudo-Code for the
+\lstset{language=Java, basicstyle=\ttfamily, stepnumber=2,
+  numbersep=9pt, tabsize=4, frame=single, caption={Pseudo-Code for the
     creation of a new course. A new Course is created, associated with
-  its department, and its attributes are filled.},
-label={fig:courseCreation},
-captionpos=b}
+    its department, and its attributes are filled.},
+  label={fig:courseCreation}, captionpos=b}
 \begin{lstlisting}
 Course course = new Course();
 department.addCourse(course);
@@ -155,16 +149,16 @@ user. The new object is then stored in the database, making it
 persistent and available for other users to view.
 
 In this scenario, in which all the information can be provided in a
-single user interaction, the transactional guarantees of the operation are
-assured by the underlying database (which is assumed to provide the
-classic transactional semantics \cite{gray1981transaction}), since the
-whole operation can be performed within the scope of a single database
-transaction.
+single user interaction, the transactional guarantees of the operation
+are assured by the underlying database (which is assumed to provide
+the classic transactional semantics \cite{gray1981transaction}), since
+the whole operation can be performed within the scope of a single
+database transaction.
 
 An important consequence of implementing the operation in a single
-database transaction is that the programmer can manipulate all the domain
-objects involved directly. The order in which the modifications to
-said objects are performed is irrelevant, as long as the domain is
+database transaction is that the programmer can manipulate all the
+domain objects involved directly. The order in which the modifications
+to said objects are performed is irrelevant, as long as the domain is
 consistent when the transactions is committed. This is the semantics
 typically expected by a programmer of such applications: there may be
 instants in which some domain objects are in an inconsistent state
@@ -206,7 +200,8 @@ on the domain, requiring manual handling.
 
 This scenario represents what was defined as a Long-Lived Transaction,
 in which the Business Operation had a larger lifetime that a single
-database transaction (in this particular case, three database transactions).
+database transaction (in this particular case, three database
+transactions).
 
 \subsection{Why are they difficult to implement?}
 
@@ -232,7 +227,7 @@ The programmer has then several choices for the implementation:
 
 It should be clear that any of those solutions is far from trivial,
 has some serious consequences, and is an unnecessary burden to the
-programmer. 
+programmer.
 
 \subsubsection{Keeping a database transaction open}
 
@@ -271,7 +266,7 @@ logging back in and continue the work where he left off. Additionally,
 anyone else in the user's department should be able to pick up where
 the original user left off. With these requirements, it becomes clear
 that simply storing a copy of the domain in session-local storage is
-not enough. 
+not enough.
 
 Web application containers already provide an application context,
 which could potentially solve this issue, however, there are no real
@@ -294,15 +289,13 @@ still in the Draft status, scattering the filtering code throughout
 the application.
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
+  \centering
+  \begin{tikzpicture}
 
 \begin{class}[text width=4.5cm]{Course}{0.5,0}
-\attribute{name : String}
-\attribute{objectives : String}
-\attribute{credits : int}
-\attribute{bibliography : Publication[]}
-\attribute{status : \{Draft, Published\}}
+  \attribute{name : String} \attribute{objectives : String}
+  \attribute{credits : int} \attribute{bibliography : Publication[]}
+  \attribute{status : \{Draft, Published\}}
 \end{class}
 
 \begin{class}[text width=3cm]{Department}{7.5,-1}
@@ -312,7 +305,7 @@ the application.
 
 \end{tikzpicture}
 
-\caption{Domain Model with state representation} 
+\caption{Domain Model with state representation}
 \label{fig:courseDomainState}
 
 \end{figure}
@@ -323,11 +316,11 @@ There are other approaches to Long-Lived Transactions, such as using
 the Database. There are some DBMSs that announce support for
 Long-Lived Transactions, such as Oracle's Workspace Manager. However,
 such support is not standardized, their API's are proprietary,
-rendering Web frameworks unusable in those cases (since they generally 
+rendering Web frameworks unusable in those cases (since they generally
 support only the SQL standard), forcing the application to be written
 against the proprietary API, making it very hard to change and
-maintain. All these factors contribute to make this approach inadmissible for
-most cases.
+maintain. All these factors contribute to make this approach
+inadmissible for most cases.
 
 \subsection{Applications of LLTs}
 
@@ -338,7 +331,7 @@ Long-Lived Transactions.
 \subsubsection{Database Management Systems}
 
 The example provided above is targeted at applications with a rich
-domain model, however 
+domain model, however
 
 \subsubsection{Workflow Systems}
 
@@ -351,10 +344,10 @@ presented above.
 
 All this effort makes Long-Lived Transactions a concept that is very
 hard to implement, promotes bad software engineering practices
-(replication, code scattering, etc), and is
-difficult to reason about. My thesis is that the support for
-Long-Lived Transactions should be transparent, and at an
-infrastructural level, relieving the programmer from this burden.
+(replication, code scattering, etc), and is difficult to reason
+about. My thesis is that the support for Long-Lived Transactions
+should be transparent, and at an infrastructural level, relieving the
+programmer from this burden.
 
 \section{Related Work}
 
@@ -363,9 +356,9 @@ solve the problem of Long Lived Transactions has been made, namely
 Database Management Systems, Workflow Systems and Object Oriented
 Transactional Systems.
 
-Also, due to its relevance regarding the
-solution described in section 4, I briefly present Software
-Transactional Memories, and how they cope with short lived transactions.
+Also, due to its relevance regarding the solution described in section
+4, I briefly present Software Transactional Memories, and how they
+cope with short lived transactions.
 
 \subsection{Database world}
 
@@ -408,10 +401,11 @@ of the ACID model*
 
 *Talk about the Fenix Framework, how it implements a Persistent STM,
 mention that the Framework brings Strict Serializability to a
-'transparent' programming model* \cite{fernandes2011strict} 
+'transparent' programming model* \cite{fernandes2011strict}
 \cite{guerraoui2008correctness} \cite{cachopo2006versioned}
 
-*Talk about how this project aims at extending the FF model to support LLT's*
+*Talk about how this project aims at extending the FF model to support
+LLT's*
 
 \subsection{STM's}
 \label{sec:stm}
@@ -436,46 +430,46 @@ database transaction was shorter than the whole operation, so the
 context was lost in each step.
 
 The main concept of the proposed architecture is then the {\bf
-  Transactional Context}. It is represented as a first-class domain entity in our
-rich domain model, making it persistent (unlike the context provided
-by a single database transaction) and transactional. With this
-persistent context, the programmer no longer needs to rely on the
-database to provide the transactional semantics of the operation. 
+  Transactional Context}. It is represented as a first-class domain
+entity in our rich domain model, making it persistent (unlike the
+context provided by a single database transaction) and
+transactional. With this persistent context, the programmer no longer
+needs to rely on the database to provide the transactional semantics
+of the operation.
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
+  \centering
+  \begin{tikzpicture}
 
-\begin{class}[text width=4cm]{TransactionalContext}{0,0}
-\end{class}
+    \begin{class}[text width=4cm]{TransactionalContext}{0,0}
+    \end{class}
 
-\begin{class}[text width=1.2cm,minimum height=5em]{Log}{4,-2}
-\end{class}
+    \begin{class}[text width=1.2cm,minimum height=5em]{Log}{4,-2}
+    \end{class}
 
-\begin{abstractclass}[text width=3cm]{DomainObject}{8,0}
-\end{abstractclass}
+    \begin{abstractclass}[text width=3cm]{DomainObject}{8,0}
+    \end{abstractclass}
 
-\draw[umlcd style school] (DomainObject) |-node[below, sloped,
-black]{object} (Log);
+    \draw[umlcd style school] (DomainObject) |-node[below, sloped,
+    black]{object} (Log);
 
-\draw[umlcd style school] (DomainObject) -| node[above, black]
-{value} (Log);
+    \draw[umlcd style school] (DomainObject) -| node[above, black]
+    {value} (Log);
 
-\draw[umlcd style school] (TransactionalContext) |- node[below, black]
-{readSet} (Log);
+    \draw[umlcd style school] (TransactionalContext) |- node[below,
+    black] {readSet} (Log);
 
-\draw[umlcd style school] (TransactionalContext) --
-node[near start, above, black]{1} (Log) 
-node[near end, below, black]{1};
-\end{tikzpicture}
+    \draw[umlcd style school] (TransactionalContext) -- node[near
+    start, above, black]{1} (Log) node[near end, below, black]{1};
+  \end{tikzpicture}
 
-\caption{Transactional Context} 
-\label{fig:transactionalContext}
+  \caption{Transactional Context}
+  \label{fig:transactionalContext}
 
 \end{figure}
 
-Figure~\ref{fig:transactionalContext} presents the conceptual model of the
-Transactional Context. Since it is a first-class entity, it can be
+Figure~\ref{fig:transactionalContext} presents the conceptual model of
+the Transactional Context. Since it is a first-class entity, it can be
 manipulated just like any other domain object. Its purpose is to keep
 all the changes made to the domain objects during the transaction,
 keeping those changes isolated from code executing outside this
@@ -491,12 +485,12 @@ the value being written.
 
 Any read operation will read the value stored in the Log for that
 particular object (whether it has been modified outside the context or
-not), or create a new Log entry if it's the first time
-the object is being accessed. A write operation will behave similarly,
-writing the new value to. It is important to note that there is at
-most one Log entry per object. When a write to an object that has been
-previously read occurs, its corresponding Log entry is promoted from
-the Read Set to the Write Set.
+not), or create a new Log entry if it's the first time the object is
+being accessed. A write operation will behave similarly, writing the
+new value to. It is important to note that there is at most one Log
+entry per object. When a write to an object that has been previously
+read occurs, its corresponding Log entry is promoted from the Read Set
+to the Write Set.
 
 Collaboration from the methods that get/set values of the domain
 objects is required, since those methods must be aware of the presence
@@ -520,28 +514,26 @@ STMs, PSTMs, DML
 
 Describe that the solution will be build on top of the Fenix Framework
 core, plus JVSTM, making it agnostic to the specific persistence
-backend in use. 
-
-
+backend in use.
 
 \subsection{Programming Model}
 
-The previously presented concept of Transactional Context as the basic
-building blocks for Long-Lived Transactions. However, Transactional
-Contexts are not business operations.
+I previously presented concept of Transactional Context as the basic
+building blocks for Long-Lived Transactions. However, useful as they
+may be,Transactional Contexts are not business operations.
 
 The main idea is that every business operation that has transactional
 requirements should execute within a transactional context. But due to
 the fact that the operation may have several steps, one must keep
 track of Transactional Context, so it is used in all steps of the
-operation. 
+operation.
 
-Since keeping track of the context can be cumbersome, and should be
-done transparently, a new concept is introduced: {\bf Transactional
-  Business Operation} (TBO). As shown in Figure~\ref{fig:TBO}, a TBO
-not only is a first-class entity that represents a particular business
-operation, but also holds its transactional context. The TBO is then
-responsible for 
+Since manually keeping track of the context can be cumbersome, and
+should be done transparently, a new concept is introduced: {\bf
+  Transactional Business Operation} (TBO). As shown in
+Figure~\ref{fig:TBO}, a TBO not only is a first-class entity that
+represents a particular business operation, but also holds its
+transactional context. The TBO is then responsible for
 \begin{inparaenum}[\itshape 1\upshape)]
 \item Managing the life-cycle of the Transactional Context
 \item Ensuring that the several steps of the operation execute within
@@ -549,66 +541,149 @@ responsible for
 \end{inparaenum}
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
+  \centering
+  \begin{tikzpicture}
 
 \begin{abstractclass}[text width=6cm]{TransactionalBusinessOperation}{0,0}
-\operation{end() : void}
-\operation{abort() : void}
+  \operation{end() : void} \operation{abort() : void}
 \end{abstractclass}
 
 \begin{class}[text width=4cm]{TransactionalContext}{7,-0.7}
 \end{class}
 
-\association{TransactionalBusinessOperation}{context}{}{TransactionalContext}{}{}
+\begin{interface}[text width=2.5cm]{@Step}{3, -2}
+  \attribute{last : boolean}
+\end{interface}
+
+\association{TransactionalBusinessOperation}{}{}{TransactionalContext}{1}{}
 
 \end{tikzpicture}
 
-\caption{Transactional Business Operation} 
+\caption{Transactional Business Operation}
 \label{fig:TBO}
 
 \end{figure}
 
-criação do TBO, gestão do life-cycle, exemplo do Get/set do TC
+\subsubsection{Instantiating a new TBO}
 
-obtenção do TBO
+Instantiating a TBO will also instantiate its associated transactional
+context. In order for a method to execute within the context
+associated to the TBO, the programmer must simply annotate the method
+with the @Step annotation. This will assure that any invocations the
+method will execute within the context of that
+operation. Listing~\ref{lst:tcMethod} shows the pseudo-code that will
+be injected in the methods to assure this property. The methods
+getCurrentTC() and setCurrentTC() allow access and modification of the
+current transactional context, which might be stored in a thread-local
+variable.
 
-Due to this fact, Transactional Contexts may be seen as 'Low-Level'
-API, while Transactional Business Operations may be seen as the
-'High-Level' API.
-
-\lstset{language=Java,frame=single,caption={Sample
-  implementation of a method that runs inside a Long Lived
-  Transaction}}
+\lstset{language=Java, frame=single, caption={Code to ensure each step
+    runs within the operation's transactional context},
+  label={lst:tcMethod}}
 \begin{lstlisting}
-
-public CourseCreation(Department department) {
-  this.setDepartment(department);
-  this.setNewCourse(new Course());
-  department.addCourse(this.getNewCourse());
+TransactionalContext context = getCurrentTC();
+try {
+  setCurrentTC(this.getContext());
+  // invoke step i of this operation
+  if(isLast) {
+    end();
+  }
+} finally {
+  setCurrentTC(context);
 }
+\end{lstlisting}
 
-@Step
-public void createNewCourse(String courseName) {
-  this.getNewCourse().setName(courseName);
-}
+\subsubsection{Getting the reference to a TBO}
 
-@Step(last = true)
-public void setBibliography
-(Publication[] bibliography) {
-  this.getNewCourse().setBibliography(bibliography);
+Given that the TBO is modelled as a first class domain entity, it can
+be directly associated to its logical 'owner' (e.g. the user who
+created it, the department it belongs to, etc).
+
+Getting a reference to the TBO between its various steps (remember the
+application might be restarted, losing all session data) might be as
+simple as asking the user to select a pending operation from the list
+of operations associated to that user. The framework is flexible
+enough to allow for a great number of ways to implement this step.
+
+\subsubsection{Ending the Operation}
+
+There are three ways for a TBO to finish:
+\begin{enumerate}
+\item By invoking the abort() method of the TBO, which will explicitly
+  discard the modifications performed in the context of this
+  operation, delete the transactional context, and lastly, the TBO
+  itself.
+
+\item By invoking the end() method of the TBO, which will attempt to
+  commit the modifications performed by the operation. In case the
+  operation cannot be committed, an exception is thrown. If the commit
+  is successful, both the TBO and its context as deleted.
+
+\item By invoking a method annotated with @Step, with the {\it last}
+  parameter set to {\it true}. This method allows the programmer to
+  define a 'last step', which will automatically commit the operation
+  once its last step is invoked. The semantics of 'committing' in this
+  case are similar to the ones provided by calling end(). This is the
+  preferable way of ending a TBO, since, in my opinion, it is the most
+  natural to the programmer.
+\end{enumerate}
+
+\subsection{Revisiting the Example}
+
+In this section I briefly present a modelling of the example
+introduced in section~\ref{sec:what}, using the proposed architecture.
+
+The architecture includes the concept of TBO, so a {\bf
+  CourseCreationOperation} is created. This class extends {\bf
+  TransactionalBusinessOperation}, and is associated with the course
+being created (which is only visible within the context of the
+operation until it commit) and the department for which the course is
+being created.
+
+An implementation of the CourseCreationOperation class is presented in
+listing~\ref{lst:courseTBO}. Each step of the user interaction is
+implemented in a single method, annotated with @Step. Since defining
+the bibliography is the last step of the operation, the
+'setBibliography()' is annotated with 'last = true', meaning that
+after its invocation, the operation will attempt to commit, making the
+new course visible to every other user in the system.
+
+\lstset{language=Java,frame=single,caption={Code for the
+    CourseCreationOperation class}, label={lst:courseTBO}}
+\begin{lstlisting}
+public class CourseCreationOperation 
+       extends TransactionalBusinessOperation {    
+
+  @Step
+  public void makeNewCourse(Department department,
+                            String courseName) {
+    this.setDepartment(department);
+    this.setNewCourse(new Course(department));
+    this.getNewCourse().setCourseName(courseName);
+  }
+
+  @Step
+  public void setObjectives(String objectives,
+                            int credits) {
+    this.getNewCourse().setObjectives(objectives);
+    this.getNewCourse().setCredits(credits);
+  }
+
+  @Step(last = true)
+  public void setBibliography
+              (Publication[] bibliography) {
+    this.getNewCourse().setBibliography(bibliography);
+  }
 }
 \end{lstlisting}
 
 \section{Evaluation}
 
-The final evaluation of this project will be measured in terms of:
-- Programmer effort needed to use LLT's
-- Performance, throughput, Commit/Abort ratios, interleaving LLTs with
-'regular' transactions
+The final evaluation of this project will be measured in terms of: -
+Programmer effort needed to use LLT's - Performance, throughput,
+Commit/Abort ratios, interleaving LLTs with 'regular' transactions
 
 \section{Conclusion}
 
-\bibliography{thesis.bib}
-\bibliographystyle{plain}
+\bibliography{thesis.bib} \bibliographystyle{plain}
 \end{document}
