@@ -48,7 +48,7 @@ the solution for this
 -- starts here for now --
 
 In this project, I aim at adding support for Long-Lived Transactions
-in applications with Rich Domain Models.  Rich Domain Models are ``An
+in applications with Rich Domain Models.  A Rich Domain Model is ``An
 object model of the domain that incorporates both behaviour and
 data.``, as described by \cite{fowler2003patterns}, meaning that
 domain objects hold both their data and the business logic that
@@ -107,8 +107,8 @@ to a department, has a name, its objectives, the credits granted upon
 completion, and the recommended bibliography. The domain is deemed to
 be consistent only if all attributes of Course have a defined value,
 and each course must have a department. Each department is responsible
-for managing its courses, meaning that it is up to someone who belongs
-to the department to start the process of creating new courses.
+for managing its courses, meaning that it is up to someone who works
+in the department to start the process of creating new courses.
 
 Note that the creation of a new course should be executed
 transactionally, since it is not desired that other users of the
@@ -159,7 +159,7 @@ An important consequence of implementing the operation in a single
 database transaction is that the programmer can manipulate all the
 domain objects involved directly. The order in which the modifications
 to said objects are performed is irrelevant, as long as the domain is
-consistent when the transactions is committed. This is the semantics
+consistent when the transaction is committed. These are the semantics
 typically expected by a programmer of such applications: there may be
 instants in which some domain objects are in an inconsistent state
 (e.g. before defining the course's bibliography), however this
@@ -174,7 +174,7 @@ implement, may not be suited for every situation. Imagine that instead
 of four attributes, Course had 50 attributes. It would then be
 unfeasible to ask the user to fill everything out in a single web
 page, so the logical solution would be to split the various attributes
-in multiple pages, accounting for multiple interactions.
+in multiple pages, accounting for multiple user interactions.
 
 Let us now assume that the creation of a course is made throughout
 three interactions. In the first interaction, the user selects the
@@ -213,21 +213,21 @@ The programmer has then several choices for the implementation:
 
 \begin{enumerate}
 \item Keeping a database transaction open during all the steps of the
-  operation
+  operation.
 
 \item Create a parallel representation of the objects that are being
-  manipulated, store them outside the domain, and applying the changes
-  only in the last interaction
+  manipulated, store them outside the domain, applying the changes
+  only in the last interaction.
 
 \item Change the domain model, to represent the consistency state of
   the objects being manipulated. This affects the code that operates
   on that portion of the domain, since it must filter objects that are
-  still in an inconsistent state
+  still in an inconsistent state.
 \end{enumerate}
 
-It should be clear that any of those solutions is far from trivial,
-has some serious consequences, and is an unnecessary burden to the
-programmer.
+It should be clear that any of those solutions is far from trivial to
+implement, has some serious consequences, and is an unnecessary burden
+to the programmer.
 
 \subsubsection{Keeping a database transaction open}
 
@@ -239,7 +239,7 @@ database transaction open during the whole business transaction.
 However, most modern RDBMs do not cope well with transactions that are
 open for arbitrarily large periods of time, since a long lived
 database transaction may limit concurrency, cause timeouts and
-deadlocks, starve the database's connection pool. All these factors
+deadlocks or starve the database's connection pool. All these factors
 contribute to making this approach highly undesirable, making the
 programmer seek alternative approaches.
 
@@ -249,8 +249,8 @@ In this approach, a series of objects similar to the domain objects
 are created, and must be managed manually, kept in the user's session
 context, outside the domain.
 
-As the complexity of the domain, and the number of objects the
-operation affects grow, the harder it becomes for the programmer to
+As the complexity of the domain, and the number of objects manipulated
+by the operation, grow, the harder it becomes for the programmer to
 manually. Ultimately, there is a copy of the whole of the domain
 stored in the user's session, waiting for the last transaction to copy
 all the information back to the domain transactionally.
@@ -261,8 +261,8 @@ should be able to operate directly on the domain.
 \subsubsection{Changing the domain model}
 
 Now imagine that an additional requirement is added to the system: the
-user may be allowed to log off in the middle of the process, and when
-logging back in and continue the work where he left off. Additionally,
+user may be allowed to log off in the middle of the process, and upon
+logging back in, continue the work where she left off. Additionally,
 anyone else in the user's department should be able to pick up where
 the original user left off. With these requirements, it becomes clear
 that simply storing a copy of the domain in session-local storage is
@@ -487,10 +487,10 @@ Any read operation will read the value stored in the Log for that
 particular object (whether it has been modified outside the context or
 not), or create a new Log entry if it's the first time the object is
 being accessed. A write operation will behave similarly, writing the
-new value to. It is important to note that there is at most one Log
-entry per object. When a write to an object that has been previously
-read occurs, its corresponding Log entry is promoted from the Read Set
-to the Write Set.
+new value to the corresponding Log entry. It is important to note that
+there is at most one Log entry per object. When a write to an object
+that has been previously read occurs, its corresponding Log entry is
+promoted from the Read Set to the Write Set.
 
 Collaboration from the methods that get/set values of the domain
 objects is required, since those methods must be aware of the presence
@@ -518,9 +518,9 @@ backend in use.
 
 \subsection{Programming Model}
 
-I previously presented concept of Transactional Context as the basic
-building blocks for Long-Lived Transactions. However, useful as they
-may be,Transactional Contexts are not business operations.
+I previously presented the concept of Transactional Context as the
+basic building block for Long-Lived Transactions. However, useful as
+they may be, Transactional Contexts are not business operations.
 
 The main idea is that every business operation that has transactional
 requirements should execute within a transactional context. But due to
@@ -599,10 +599,10 @@ Given that the TBO is modelled as a first class domain entity, it can
 be directly associated to its logical 'owner' (e.g. the user who
 created it, the department it belongs to, etc).
 
-Getting a reference to the TBO between its various steps (remember the
-application might be restarted, losing all session data) might be as
-simple as asking the user to select a pending operation from the list
-of operations associated to that user. The framework is flexible
+Getting a reference to the TBO between its various steps (recall that
+the application might be restarted, losing all session data) might be
+as simple as asking the user to select a pending operation from the
+list of operations associated to that user. The framework is flexible
 enough to allow for a great number of ways to implement this step.
 
 \subsubsection{Ending the Operation}
@@ -617,13 +617,13 @@ There are three ways for a TBO to finish:
 \item By invoking the end() method of the TBO, which will attempt to
   commit the modifications performed by the operation. In case the
   operation cannot be committed, an exception is thrown. If the commit
-  is successful, both the TBO and its context as deleted.
+  is successful, both the TBO and its context are deleted.
 
 \item By invoking a method annotated with @Step, with the {\it last}
   parameter set to {\it true}. This method allows the programmer to
   define a 'last step', which will automatically commit the operation
-  once its last step is invoked. The semantics of 'committing' in this
-  case are similar to the ones provided by calling end(). This is the
+  once it's invoked. The semantics of 'committing' in this case are
+  similar to the ones provided by calling end(). This is the
   preferable way of ending a TBO, since, in my opinion, it is the most
   natural to the programmer.
 \end{enumerate}
