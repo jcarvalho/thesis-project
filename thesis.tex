@@ -569,19 +569,19 @@ transactional context. The TBO is then responsible for
 Instantiating a TBO will also instantiate its associated transactional
 context. In order for a method to execute within the context
 associated to the TBO, the programmer must simply annotate the method
-with the @Step annotation. This will assure that any invocations the
-method will execute within the context of that
+with the @Step annotation. This will assure that any invocations of
+the method will execute within the context of that
 operation. Listing~\ref{lst:tcMethod} shows the pseudo-code that will
 be injected in the methods to assure this property. The methods
 getCurrentTC() and setCurrentTC() allow access and modification of the
-current transactional context, which might be stored in a thread-local
+current transactional context, which may be stored in a thread-local
 variable.
 
 \lstset{language=Java, frame=single, caption={Code to ensure each step
     runs within the operation's transactional context},
   label={lst:tcMethod}}
 \begin{lstlisting}
-TransactionalContext context = getCurrentTC();
+TransactionalContext savedContext = getCurrentTC();
 try {
   setCurrentTC(this.getContext());
   // invoke step i of this operation
@@ -596,13 +596,13 @@ try {
 \subsubsection{Getting the reference to a TBO}
 
 Given that the TBO is modelled as a first class domain entity, it can
-be directly associated to its logical 'owner' (e.g. the user who
+be directly associated with its logical owner (e.g. the user who
 created it, the department it belongs to, etc).
 
 Getting a reference to the TBO between its various steps (recall that
-the application might be restarted, losing all session data) might be
-as simple as asking the user to select a pending operation from the
-list of operations associated to that user. The framework is flexible
+the application may be restarted, losing all session data) may be as
+simple as asking the user to select a pending operation from the list
+of operations associated to that user. The framework is flexible
 enough to allow for a great number of ways to implement this step.
 
 \subsubsection{Ending the Operation}
@@ -621,11 +621,11 @@ There are three ways for a TBO to finish:
 
 \item By invoking a method annotated with @Step, with the {\it last}
   parameter set to {\it true}. This method allows the programmer to
-  define a 'last step', which will automatically commit the operation
-  once it's invoked. The semantics of 'committing' in this case are
-  similar to the ones provided by calling end(). This is the
-  preferable way of ending a TBO, since, in my opinion, it is the most
-  natural to the programmer.
+  define a last step, which will automatically commit the operation
+  once invoked. The semantics of committing in this case is similar to
+  the one provided by calling end(). This is the preferable way of
+  ending a TBO, in my opinion, it is the most natural to the
+  programmer.
 \end{enumerate}
 
 \subsection{Revisiting the Example}
@@ -637,16 +637,17 @@ The architecture includes the concept of TBO, so a {\bf
   CourseCreationOperation} is created. This class extends {\bf
   TransactionalBusinessOperation}, and is associated with the course
 being created (which is only visible within the context of the
-operation until it commit) and the department for which the course is
+operation until it commits) and the department for which the course is
 being created.
 
-An implementation of the CourseCreationOperation class is presented in
-listing~\ref{lst:courseTBO}. Each step of the user interaction is
-implemented in a single method, annotated with @Step. Since defining
-the bibliography is the last step of the operation, the
-'setBibliography()' is annotated with 'last = true', meaning that
-after its invocation, the operation will attempt to commit, making the
-new course visible to every other user in the system.
+An implementation of the {\bf CourseCreationOperation} class is
+presented in Listing~\ref{lst:courseTBO}. Each step of the user
+interaction is implemented in a single method, annotated with
+@Step. Since defining the bibliography is the last step of the
+operation, the 'setBibliography()' is annotated with 'last = true',
+meaning that after its invocation, the operation will attempt to
+commit, making the new course visible to every other user in the
+system.
 
 \lstset{language=Java,frame=single,caption={Code for the
     CourseCreationOperation class}, label={lst:courseTBO}}
