@@ -408,25 +408,39 @@ making the underlying database completely transparent to the
 programmer.
 
 Object/Relational Mapping tools are available for a great number of
-languages. For Java, there is the Java Persistence API (JPA), which
-provides an annotation-based API for managing persistent objects. The
-most well-known implementations of the JPA are Hibernate, DataNucleus,
-OpenJPA, EJB (Entreprise Java Beans), among many others.
+languages. For Java, there are two competing persistence standars:
+Java Persistence API (JPA) and Java Data Objects (JDO). Both
+specifications allow a programmer to create domain entities by
+decorating Plain Old Java Objects (POJOs) with annotations, making the
+persistence layer transparent to the programmer. While JDO provides a
+larger number of features then JPA, the later has seen greater
+adoption by the community, both in terms of usage and support.
+
+The most well-known implementations of the JPA are Hibernate,
+DataNucleus, OpenJPA and EclipseLink. Other ORM tools include
+DatabaseObjects (.NET), NHibernate (Hibernate for .NET), CoreData
+(Objective-C), CodeIgniter (PHP) and Django (Python).
 
 In order to provide transactional support for domain objects, ORM's
 typically use delegate transaction management to the underlying
 Database (which is assumed to provide full ACID support). In fact, as
 of this writing, all the examples shown above operate this way.
 
-blah
-
-I will now take a look at how the Java Persistence API and Hibernate
-attempt to cope with Long-Lived Transactions.
+Given the popularity of Java, I will now focus on the JPA, and one of
+its most popular implementations, Hibernate, in order to understand
+how they cope with Long Lived Transactions. Note that despite the
+concreteness of the examples presented, their concepts are generic
+enough to be applied to any other ORM tool.
 
 \subsubsection{JPA Optimistic Concurrency Control}
 
 The specification of the Java Persistence API assumes the use of
-optimistic concurrency control. 
+optimistic concurrency control (or optimistic locking). In this
+context, optimistic locking is used to prevent the database from
+holding on to critical resources, potentially causing high degrees of
+contention.  This is achieved by operating directly on the domain
+objects, potentially delaying the propagation of the changes made to
+the objects.
 
 \subsubsection{Hibernate Long Conversations}
 
@@ -442,7 +456,7 @@ assists the programmer in verifying that the data read across the
 multiple transactions is consistent, using an object versioning
 mechanism. However, this verification only works if all the data
 required for the application is read within the first database
-transaction. 
+transaction.
 
 This support is not good enough for several reasons:
 
@@ -465,6 +479,9 @@ This support is not good enough for several reasons:
 All of this reasons violate the desired properties described in
 \ref{sec:difficult}, making this system undesirable.
 
+\subsection{STM's}
+\label{sec:stm}
+
 \subsection{Object-Oriented}
 
 *Talk about the Fenix Framework, how it implements a Persistent STM,
@@ -474,10 +491,6 @@ mention that the Framework brings Strict Serializability to a
 
 *Talk about how this project aims at extending the FF model to support
 LLT's*
-
-\subsection{STM's}
-\label{sec:stm}
-
 
 \section{Solution Architecture}
 
