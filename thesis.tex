@@ -204,6 +204,7 @@ database transaction (in this particular case, three database
 transactions).
 
 \subsection{Why are they difficult to implement?}
+\label{sec:difficult}
 
 In this multiple interaction scenario, special care must be taken when
 implementing the operation. Like mentioned above, one cannot simple
@@ -362,9 +363,13 @@ cope with short lived transactions.
 
 \subsection{Database world}
 
+\subsubsection{Isolation Levels}
+\label{sec:isolation}
+
 *Mention classic books*
 
-*Mention Martin Fowler's patterns \cite{fowler2003patterns}*
+*Mention Martin Fowler's patterns \cite{fowler2003patterns}* - Unit of
+Work, Offline Locking
 
 *Relaxation of transactional properties*
 
@@ -391,13 +396,76 @@ provide only Serializability at best*
 *Explain why those solutions are not good, since they *may* break ACI
 of the ACID model*
 
-\subsection{Object-Relational Mappings}
+\subsection{Object/Relational Mapping}
 
-*Talk about how ORM's handle transactions, i.e. Hibernate*
+Due to the increase in popularity of object-oriented programming, a
+large number of Object/Relational Mapping (ORM) tools have arisen over
+the past few years\cite{orm}. These tools range from simple data
+access layer abstractions (which simply abstract the necessary
+instructions to perform the desired operation), to fully fledged
+tools, which handle every aspect of the Object/Relational Mapping,
+making the underlying database completely transparent to the
+programmer.
+
+Object/Relational Mapping tools are available for a great number of
+languages. For Java, there is the Java Persistence API (JPA), which
+provides an annotation-based API for managing persistent objects. The
+most well-known implementations of the JPA are Hibernate, DataNucleus,
+OpenJPA, EJB (Entreprise Java Beans), among many others.
+
+In order to provide transactional support for domain objects, ORM's
+typically use delegate transaction management to the underlying
+Database (which is assumed to provide full ACID support). In fact, as
+of this writing, all the examples shown above operate this way.
+
+blah
+
+I will now take a look at how the Java Persistence API and Hibernate
+attempt to cope with Long-Lived Transactions.
+
+\subsubsection{JPA Optimistic Concurrency Control}
+
+The specification of the Java Persistence API assumes the use of
+optimistic concurrency control. 
+
+\subsubsection{Hibernate Long Conversations}
+
+Hibernate supports the concept of ``Long Conversations'' by allowing a
+session\footnote{A Hibernate session implements the Unit of Work
+  design pattern \cite{fowler2003patterns}.} to remain open as long as
+the user interaction lasts, potentially executing multiple database
+transactions. However, the programmer is responsible for ensuring the
+atomicity and isolation of the business transaction, by following a
+very strict pattern: all transactions but the last must only read
+data, only the last database transaction can update data. Hibernate
+assists the programmer in verifying that the data read across the
+multiple transactions is consistent, using an object versioning
+mechanism. However, this verification only works if all the data
+required for the application is read within the first database
+transaction. 
+
+This support is not good enough for several reasons:
+
+\begin{itemize}
+\item It imposes a pattern that may not be suited for many
+  applications.
+\item All the state of the transaction is kept in memory, which may
+  cause the application to run out of memory in very large
+  transactions.
+\item The session is not kept persistent. If the application server
+  restarts in the middle of the transaction, all data is lost.
+\item Despite the versioning support, this system only supports the
+  ``Repeatable Read'' isolation level (see
+  \ref{sec:isolation}). Suppose that a database transaction other than
+  the first (T2) reads an object, which was committed concurrently (by
+  T3) between the first transaction and T2. T2 will read the value
+  written by T3, and the Long Transaction is not serializable.
+\end{itemize}
+
+All of this reasons violate the desired properties described in
+\ref{sec:difficult}, making this system undesirable.
 
 \subsection{Object-Oriented}
-
-*Talk about ORM's in Object Oriented systems, such as Hibernate*
 
 *Talk about the Fenix Framework, how it implements a Persistent STM,
 mention that the Framework brings Strict Serializability to a
@@ -589,7 +657,7 @@ try {
     end();
   }
 } finally {
-  setCurrentTC(context);
+  setCurrentTC(savedContext);
 }
 \end{lstlisting}
 
