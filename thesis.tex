@@ -316,7 +316,7 @@ the application.
 There are other approaches to Long-Lived Transactions, such as using
 the Database. There are some DBMSs that announce support for
 Long-Lived Transactions, such as Oracle's Workspace Manager. However,
-such support is not standardized, their API's are proprietary,
+uch support is not standardized, their API's are proprietary,
 rendering Web frameworks unusable in those cases (since they generally
 support only the SQL standard), forcing the application to be written
 against the proprietary API, making it very hard to change and
@@ -332,14 +332,19 @@ Long-Lived Transactions.
 \subsubsection{Database Management Systems}
 
 The example provided above is targeted at applications with a rich
-domain model, however
+domain model, however there are many applications built directly on
+top of DBMS's that
 
 \subsubsection{Workflow Systems}
 
 Workflow Management Systems are another area in which Long-Lived
-Transactions are interesting. Workflow processes are inherently
-Long-Lived. Each activity can be seen as an interaction in the example
-presented above.
+Transactions are interesting. Workflow processes represent business
+transactions, consisting in a flow of steps or tasks, each of them
+possibly performed by different people.
+
+It is thus vital for Workflow Systems to embrace Long-Lived
+Transactions as a core concept, and many approaches have been
+developed in this area.
 
 \subsection{Objectives}
 
@@ -362,6 +367,7 @@ Also, due to its relevance regarding the solution described in section
 cope with short lived transactions.
 
 \subsection{Database world}
+\label{sec:rdbms}
 
 \subsubsection{Isolation Levels}
 \label{sec:isolation}
@@ -424,7 +430,10 @@ DatabaseObjects (.NET), NHibernate (Hibernate for .NET), CoreData
 In order to provide transactional support for domain objects, ORM's
 typically use delegate transaction management to the underlying
 Database (which is assumed to provide full ACID support). In fact, as
-of this writing, all the examples shown above operate this way.
+of this writing, all the examples shown above operate this way. Thus,
+Long-Lived Transaction support in ORM tools is largely dependent on
+the underlying DBMS, presenting the same challenges as described in
+\ref{sec:rdbms}.
 
 Given the popularity of Java, I will now focus on the JPA, and one of
 its most popular implementations, Hibernate, in order to understand
@@ -441,6 +450,13 @@ holding on to critical resources, potentially causing high degrees of
 contention.  This is achieved by operating directly on the domain
 objects, potentially delaying the propagation of the changes made to
 the objects.
+
+As part of the JPA, there is the concept of Version field. This field
+allows ``disconnected operation'', meaning that the reads/writes from
+the database are deferred until a checkpoint or the end of
+transaction. When using this optimistic approach, all the versions of
+the objects used in the transaction are checked against the version
+present in the database, thus ensuring that no dirty reads will occur.
 
 \subsubsection{Hibernate Long Conversations}
 
@@ -631,10 +647,6 @@ transactional context. The TBO is then responsible for
 
 \begin{class}[text width=4cm]{TransactionalContext}{7,-0.7}
 \end{class}
-
-\begin{interface}[text width=2.5cm]{@Step}{3, -2}
-  \attribute{last : boolean}
-\end{interface}
 
 \association{TransactionalBusinessOperation}{}{}{TransactionalContext}{1}{}
 
