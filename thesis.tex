@@ -346,6 +346,10 @@ It is thus vital for Workflow Systems to embrace Long-Lived
 Transactions as a core concept, and many approaches have been
 developed in this area.
 
+Consider the Course Creation example. Assume that each step of the
+operation is executed by a different person. A Workflow Management
+System could be a candidate to implement that operation.
+
 \subsection{Objectives}
 
 All this effort makes Long-Lived Transactions a concept that is very
@@ -388,6 +392,75 @@ Work, Offline Locking
 provide only Serializability at best*
 
 \subsection{Workflow Management Systems}
+
+A Workflow Process is described as a sequence of connected steps (or
+activities), with special emphasis on the on the flow paradigm, where
+each step of the process follows the precedent with no gap, and ends
+just before the next step can begin. A Workflow Process typically has
+a long duration, involves many users (in fact, each step is typically
+executed by a different users), and ranges across a variety of
+heterogeneous systems. Individual activities range from computer
+programs and applications to human activities such as meetings and
+decision making.
+
+Workflow Management Systems (WFMSs) are computer systems that manage
+user-defined Workflow processes for different types of jobs and
+processes. WMSs assign to each step the person/group responsible for
+that step, and once the step is finished, notify the responsible for
+the next step, as well as making sure they get the data they need for
+that step, as well as the subsequent steps.
+
+In such systems, it is common to provide transactional guarantees to the process
+execution. Note that in this context, there is a clear separation
+between {\it Business Transaction} and {\it System Transaction}. In
+this case, the {\it Business Transaction} is the process as a whole,
+which may be executed via several {\it System Transactions}.
+
+However, there is one major difference between typical transaction
+systems and WFMSs, since in the later the system has no way of
+controlling the application between successive invocation of the
+process's activities.
+
+In this document I will use an abstract model
+to describe Workflow Processes, using the following concepts:
+\begin{itemize}
+\item {\bf Process} is a description of the sequence of steps
+  necessary to achieve a goal. A process consists of activities and
+  data.
+\item {\bf Activity} is each step within a process. Activities have a
+  name, pre and post-conditions, and a series of constraints. 
+\item {\bf Control Flow} is the order in which activities are
+  executed.
+\item {\bf Data Flow} is the mapping between the inputs/outputs of the
+  data required by the activities.
+\item {\bf Conditions} specify the circumstances in which certain
+  events will happen. {\it Transition Conditions} specify whether a
+  certain activity may or may not start. {\it Start Conditions}
+  specify when an activity is actually started, either by all its
+  triggering events (AND) or by just one (OR). {\it Exit Conditions}
+  specify whether an activity has finished successfully.
+\end{itemize}
+In this model, an activity with no incoming activities is considered a
+{\it Start Activity}. A process is considered finished once all its
+activities are terminated.
+
+Over the years, many Workflow Modelling Languages have been devised,
+and in fact, it is still a very active area of research. Examples of
+such languages are YAWL \cite{van2005yawl}, AWGL
+\cite{fahringer2005specification}, UEML \cite{vernadat2002ueml} among
+many others.
+
+One of the biggest challenges with WFMS is that due to its disparity
+from the transaction models provided by the ``regular'' transaction
+support systems, such as Long-Lived Transaction support. Much research
+has been made in this area to support Long-Lived Transactions, and I
+will now analyse that research.
+
+\subsubsection{Sagas}
+
+\subsubsection{Exception Handling Systems}
+
+\subsubsection{Why are these systems unfit}
 
 \cite{alonso1996advanced}
 
@@ -495,10 +568,23 @@ This support is not good enough for several reasons:
 All of this reasons violate the desired properties described in
 \ref{sec:difficult}, making this system undesirable.
 
-\subsection{STM's}
+\subsection{Software Transactional Memories}
 \label{sec:stm}
 
-\subsection{Object-Oriented}
+Given that the solution I propose in Section \ref{sec:arch} is built
+upon a Software Transactional Memory (STM), a brief introduction to
+the topic is in order.
+
+STM's bring into the realm of programming languages, the age-old
+notion of transactions, well-known in the area of DBMSs. However,
+unlike those, STMs are not concerned with the Durability property of
+the ACID model, and thus, many STM implementations have little in
+common with their database counterparts.
+
+Software Transactional Memory allows for multi-threaded operation
+within
+
+\subsection{Persistent STMs}
 
 *Talk about the Fenix Framework, how it implements a Persistent STM,
 mention that the Framework brings Strict Serializability to a
@@ -509,6 +595,7 @@ mention that the Framework brings Strict Serializability to a
 LLT's*
 
 \section{Solution Architecture}
+\label{sec:arch}
 
 In this section I will describe the architecture of my proposed
 solution, as well as a small introduction to the Fenix Framework
