@@ -410,25 +410,26 @@ that step, and once the step is finished, notify the responsible for
 the next step, as well as making sure they get the data they need for
 that step, as well as the subsequent steps.
 
-In such systems, it is common to provide transactional guarantees to the process
-execution. Note that in this context, there is a clear separation
-between {\it Business Transaction} and {\it System Transaction}. In
-this case, the {\it Business Transaction} is the process as a whole,
-which may be executed via several {\it System Transactions}.
+In such systems, it is common to provide transactional guarantees to
+the process execution. Note that in this context, there is a clear
+separation between {\it Business Transaction} and {\it System
+  Transaction}. In this case, the {\it Business Transaction} is the
+process as a whole, which may be executed via several {\it System
+  Transactions}.
 
 However, there is one major difference between typical transaction
 systems and WFMSs, since in the later the system has no way of
 controlling the application between successive invocation of the
 process's activities.
 
-In this document I will use an abstract model
-to describe Workflow Processes, using the following concepts:
+In this document I will use an abstract model to describe Workflow
+Processes, using the following concepts:
 \begin{itemize}
 \item {\bf Process} is a description of the sequence of steps
   necessary to achieve a goal. A process consists of activities and
   data.
 \item {\bf Activity} is each step within a process. Activities have a
-  name, pre and post-conditions, and a series of constraints. 
+  name, pre and post-conditions, and a series of constraints.
 \item {\bf Control Flow} is the order in which activities are
   executed.
 \item {\bf Data Flow} is the mapping between the inputs/outputs of the
@@ -452,19 +453,32 @@ many others.
 
 One of the biggest challenges with WFMS is that due to its disparity
 from the transaction models provided by the ``regular'' transaction
-support systems, such as Long-Lived Transaction support. Much research
-has been made in this area to support Long-Lived Transactions, and I
-will now analyse that research.
+support systems, such as Long-Lived Transaction support. Regarding
+correctness and reliability, we are facing major differences, since
+WFMSs provide no significant support for recovery and failure
+handling, leaving the user with the task of determining the actions
+necessary to recover consistency issues and determining which
+activities are needed to recover from an exception, while
+transactional systems embrace recovery as a core concept.
+
+In most WFMSs the execution of a process is persistent, in the sense
+that in case of a failure, the process will stop, until the failures
+have been fixed, and then resumed. In case the system fails while an
+activity is executing, the system is not notified, and the work
+performed by that activity must be manually reverted.
+
+I will now look into several approaches devised to add transactional
+support to WFMSs, in which support for Long-Lived Transactions is a
+prominent concern.
 
 \subsubsection{Sagas}
+
+Garcia-Molina and K. Salem proposed, in their 1987 paper, the notion
+of sagas \cite{garcia1987sagas}. 
 
 \subsubsection{Exception Handling Systems}
 
 \subsubsection{Why are these systems unfit}
-
-\cite{alonso1996advanced}
-
-*Sagas* \cite{garcia1987sagas}
 
 \cite{798492}
 
