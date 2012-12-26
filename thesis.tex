@@ -376,6 +376,58 @@ cope with short lived transactions.
 \subsubsection{Isolation Levels}
 \label{sec:isolation}
 
+In order to better understand the desired isolation level of a
+Long-Lived Transaction support system, an analysis of the most common
+isolation levels is in order.
+
+Attaining full isolation between transactions, while seemingly
+necessary, can oftentimes be a burden to the DBMS, due to the required
+overhead. Thus, isolation is, out of the four ACID properties, the one
+most often relaxed. Isolation is typically implemented using Locks or
+Multiversion concurrency control, which may result in a loss of
+concurrency. In order to cope with that fact, several standard
+isolation levels have been defined.
+
+In the ANSI/ISO SQL standard\cite{melton1992ansi}, four isolation
+levels have been defined (from most to least relaxed):
+
+\begin{itemize}
+\item {\bf Read Uncommitted} In this isolation level, read operations
+  are performed in a non-locking fashion, thus, {\it Dirty reads} may
+  occur. A {\it Dirty read} is defined as a read operation that reads
+  data updated by a live (not yet committed) transaction.
+\item {\bf Read Committed} In this level, {\it Dirty reads} cannot
+  happen, guaranteeing that all reads are {\it Consistent reads}
+  (meaning they only read data written by already committed
+  transactions). However, multiple reads to the same data location may
+  read different values (from transactions that committed in between),
+  even within a single transaction.
+\item With {\bf Repeatable Read}, all {\it Consistent reads} within
+  the same transaction read the snapshot established by the first
+  read.
+\item {\bf Serializable} is the {\it highest} isolation level defined
+  in SQL. Serializability requires repeatable reads, as well as
+  guaranteeing that {\it Phantom reads} do not occur. A {\it Phantom
+    read} occurs when, in the course of a transaction, two identical
+  queries (that act upon a range of values) return a different result
+  collection. This can occur when running queries
+  like ``SELECT * FROM users WHERE age BETWEEN 10 AND 30;''. If an
+  interleaving transaction creates a new user with an age between
+  10 and 30 years, the second run of the query will show a result
+  which contains the new user.
+\end{itemize}
+
+Another common isolation level (not described in SQL-92) is {\bf
+  Snapshot Isolation}. In snapshot isolation, all reads made within a
+transaction are guaranteed to see a consistent snapshot of the
+database, and the transaction itself will only commit if no updates it
+has made conflict with any concurrent updates since the
+snapshot. Snapshot isolation arose from work on Multiversion
+Concurrency Control, and thus did not make it into the lock-based
+mindset of the SQL-92 standard.
+
+\subsubsection{Supporting Long-Lived Transactions in the DBMS}
+
 *Mention classic books*
 
 *Mention Martin Fowler's patterns \cite{fowler2003patterns}* - Unit of
@@ -387,8 +439,6 @@ Work, Offline Locking
 \cite{salem1989altruistic}
 
 \subsubsection{Nested Transactions}
-
-*Talk about isolation levels*
 
 *Mention that the best implementations of LLT's at the database level
 provide only Serializability at best*
@@ -632,6 +682,8 @@ common with their database counterparts.
 
 Software Transactional Memory allows for multi-threaded operation
 within
+
+\subsubsection{Isolation Levels}
 
 \subsection{Persistent STMs}
 
