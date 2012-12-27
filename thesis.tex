@@ -433,14 +433,9 @@ snapshot. Snapshot isolation arose from work on Multiversion
 Concurrency Control, and thus did not make it into the lock-based
 mindset of the SQL-92 standard.
 
-\subsubsection{Transactional Support in DBMS}
-
 \subsubsection{Concurrency Control}
 
 *Mention classic books*
-
-*Mention Martin Fowler's patterns \cite{fowler2003patterns}* - Unit of
-Work, Offline Locking
 
 *Relaxation of transactional properties*
 
@@ -509,7 +504,8 @@ of a conflict is too high, no matter its likelihood, this is the
 appropriate pattern.
 
 Although with the use of these patterns, the development of Long-Lived
-Transactions is facilitated, they are still 
+Transactions is facilitated, they still require reasoning from the
+programmer.
 
 \subsection{Workflow Management Systems}
 
@@ -631,8 +627,6 @@ condition is evaluated to false, and no other activity in that path
 will be executed, making the process evolve in the path of the
 compensating activities.
 
-\subsubsection{Spheres of Atomicity}
-
 \subsubsection{Why are these systems unfit}
 
 \cite{798492}
@@ -742,14 +736,38 @@ Given that the solution I propose in Section \ref{sec:arch} is built
 upon a Software Transactional Memory (STM), a brief introduction to
 the topic is in order.
 
-STM's bring into the realm of programming languages, the age-old
-notion of transactions, well-known in the area of DBMSs. However,
-unlike those, STMs are not concerned with the Durability property of
-the ACID model, and thus, many STM implementations have little in
-common with their database counterparts.
+The original idea behing Transactional Memories (TM) is to provide
+efficient lock-free data structures for highly concurrent systems
+\cite{herlihy1993transactional} using hardware. Its main goal is to
+free programmers from using locks and monitors to manage concurrent
+accesses to shared data. Managing lock granularity and composability
+is a cumbersome and error-prone task, and may lead to unwanted
+situations such as deadlocks. Over the years, the original concept of
+Hardware Transactional Memories has evolved, giving birth to Software
+Transactional Memories. 
 
-Software Transactional Memory allows for multi-threaded operation
-within
+Software Transactional Memories bring into the realm of programming
+languages, the age-old notion of transactions, well-known in the area
+of DBMSs. However, unlike those, STMs are not concerned with the
+Durability property of the ACID model, and thus, many STM
+implementations have little in common with their database
+counterparts. 
+
+There have been several recent proposals for STM implementations, such
+as those described in \cite{cachopo2006versioned},
+\cite{herlihy2003software}, \cite{marathe2005adaptive},
+\cite{dice2006transactional}, \cite{riegel2006lazy} and 
+\cite{marathe2006lowering}.
+
+STMs use transactions to isolate memory operations in atomic Units of
+Work. A transaction typically contains a Read Set and Write Set, used
+to register its read and write operations, respectively. The STM
+provides a series of mutable memory locations that can be read from or
+written to. It is up to the programmer to confine all of the
+application's mutable state to these memory locations, while it is the
+responsibility of the STM to guarantee that concurrent accesses to
+such memory locations are correct according to the specified
+correctness criteria.
 
 \subsubsection{Correctness Criteria}
 
@@ -759,10 +777,10 @@ levels (or correctness criteria) that can be found in DBMS. In
 ``traditional'' correctness criteria are unfit for TM implementations,
 and proposes the {\it opacity} criterion. Opacity is described as a
 safety property that assures that ``[...] (1) all operations performed
-by every {\it committed} transaction appear as if they happened at some
-single, indivisible point during the transaction lifetime, (2) no
-operation performed by any {\it aborted} transaction is ever visible to
-other transactions (including live ones), and (3) every transaction
+by every {\it committed} transaction appear as if they happened at
+some single, indivisible point during the transaction lifetime, (2) no
+operation performed by any {\it aborted} transaction is ever visible
+to other transactions (including live ones), and (3) every transaction
 always observes a {\it consistent} state of the system.'', meaning
 that unlike Serializability, even {\it non-committed} transactions are
 prevented from accessing inconsistent states. This correctness
