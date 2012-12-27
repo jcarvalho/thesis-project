@@ -410,12 +410,19 @@ levels have been defined (from most to least relaxed):
   guaranteeing that {\it Phantom reads} do not occur. A {\it Phantom
     read} occurs when, in the course of a transaction, two identical
   queries (that act upon a range of values) return a different result
-  collection. This can occur when running queries
-  like ``SELECT * FROM users WHERE age BETWEEN 10 AND 30;''. If an
-  interleaving transaction creates a new user with an age between
-  10 and 30 years, the second run of the query will show a result
-  which contains the new user.
+  collection. This can occur when running queries like ``SELECT * FROM
+  users WHERE age BETWEEN 10 AND 30;''. If an interleaving transaction
+  creates a new user with an age between 10 and 30 years, the second
+  run of the query will show a result which contains the new user.
 \end{itemize}
+
+In \cite{papadimitriou1979serializability}, an extension to
+Serializability is described: Strict Serializability. In addition to
+the requirements for Serializability, Strict Serializability requires
+that transaction histories are real-time ordered, meaning that all
+transactions histories must be ordered in a way consistent with the
+precedence order of the operations. In practice, this isolation level
+is not implemented by DBMSs, due to its performance impact.
 
 Another common isolation level (not described in SQL-92) is {\bf
   Snapshot Isolation}. In snapshot isolation, all reads made within a
@@ -460,8 +467,49 @@ properties are broken by using several system transactions.
 
 \begin{itemize}
 \item {\bf Optimistic Offline Lock} This pattern solves the problem by
-  introducing a ``Version'' field to every record in the database, 
+  validating that the changes about to be committed by one session (or
+  business transaction) don't conflict with the changes of another
+  session. This is achieved by, in each system transaction commit,
+  validating that the changes about to be committed are consistent,
+  making sure that the value previously read by the current session
+  was not changed by another session (i.e. obtaining an Optimistic
+  Offline Lock).  The most common implementation of this pattern
+  consists on associating a version number with the record in the
+  system. When a record is loaded, the record's version is kept in the
+  session, and that version is used when acquiring the Optimistic
+  Offline Lock (by comparing the two versions). Once the lock is
+  successfully acquired, the record's version is incremented, and the
+  system transaction can be committed. If the lock cannot be acquired,
+  a conflict is detected, the current system transaction is rolled
+  back, and the business transaction must either abort or attempt to
+  resolve the conflict and retry.
+
+\item {\bf Pessimistic Offline Lock} This patterns prevents conflicts
+  by avoiding them all together. It forces a business transaction to
+  acquire a lock in each record before using it, so once you begin the
+  business transaction, you are mostly sure that it will complete
+  without concurrency control issues. These locks however, are not
+  database-level locks, but are instead high-level, typically managed
+  by a lock manager in the application, and can have various
+  granularities (which will have different impacts on system
+  performance). In this pattern, whenever a business transaction
+  wishes to access a record (for either read or write), it must
+  acquire a lock with the lock manager, assuring that a business
+  transaction that wishes to write for that particular record is the
+  only one doing so.
 \end{itemize}
+
+Typically {\bf Optimistic Offline Lock}s are used in an environment
+where conflicts are expected to be low. If conflicts are likely, it is
+not good user experience to report a conflict after the user finished
+his work and is ready to commit. In that case, a {\bf Pessimistic
+  Offline Lock} is in order, avoiding throwing away work, since
+conflicts can be detected early in the transaction. Also, if the cost
+of a conflict is too high, no matter its likelihood, this is the
+appropriate pattern.
+
+Although with the use of these patterns, the development of Long-Lived
+Transactions is facilitated, they are still 
 
 \subsection{Workflow Management Systems}
 
@@ -703,7 +751,22 @@ common with their database counterparts.
 Software Transactional Memory allows for multi-threaded operation
 within
 
-\subsubsection{Isolation Levels}
+\subsubsection{Correctness Criteria}
+
+In Section~\ref{sec:isolation}, I presented the typical isolation
+levels (or correctness criteria) that can be found in DBMS. In
+\cite{guerraoui2008correctness}, the author claims that the
+``traditional'' correctness criteria are unfit for TM implementations,
+and proposes the {\it opacity} criterion. Opacity is described as a
+safety property that assures that ``[...] (1) all operations performed
+by every {\it committed} transaction appear as if they happened at some
+single, indivisible point during the transaction lifetime, (2) no
+operation performed by any {\it aborted} transaction is ever visible to
+other transactions (including live ones), and (3) every transaction
+always observes a {\it consistent} state of the system.'', meaning
+that unlike Serializability, even {\it non-committed} transactions are
+prevented from accessing inconsistent states. This correctness
+criteria is ensured by most TM systems.
 
 \subsection{Persistent STMs}
 
