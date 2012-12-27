@@ -426,7 +426,9 @@ snapshot. Snapshot isolation arose from work on Multiversion
 Concurrency Control, and thus did not make it into the lock-based
 mindset of the SQL-92 standard.
 
-\subsubsection{Supporting Long-Lived Transactions in the DBMS}
+\subsubsection{Transactional Support in DBMS}
+
+\subsubsection{Concurrency Control}
 
 *Mention classic books*
 
@@ -442,6 +444,24 @@ Work, Offline Locking
 
 *Mention that the best implementations of LLT's at the database level
 provide only Serializability at best*
+
+\subsubsection{Offline Concurrency Patterns}
+
+Martin Fowler, in his book ``Patterns of Enterprise Application
+Architecture'' \cite{fowler2003patterns}, introduces a series of
+``Offline Concurrency Patters'', as the building blocks for Long-Lived
+Transaction support at the application level. In his patterns, Fowler
+assumes that a Long-Lived Transaction is run as a series of
+short-lived system transactions, whose transactional support is
+provided by the underlying DBMS.
+
+The patterns provide a workaround for the fact that the ACID
+properties are broken by using several system transactions.
+
+\begin{itemize}
+\item {\bf Optimistic Offline Lock} This pattern solves the problem by
+  introducing a ``Version'' field to every record in the database, 
+\end{itemize}
 
 \subsection{Workflow Management Systems}
 
