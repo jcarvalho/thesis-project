@@ -125,7 +125,7 @@ business operation of creating a new course. Assume that {\bf
     creation of a new course. A new Course is created, associated with
     its department, and its attributes are filled.},
   label={fig:courseCreation}, captionpos=b}
-\begin{lstlisting}
+\begin{lstlisting}[float]
 Course course = new Course();
 department.addCourse(course);
 course.setName(name);
@@ -787,6 +787,7 @@ prevented from accessing inconsistent states. This correctness
 criteria is ensured by most TM systems.
 
 \subsection{Persistent STMs}
+\label{sec:pstm}
 
 Over the years, Enterprise Application architecture has evolved at a
 very fast pace. However, one aspect has remained constant: they still
@@ -919,9 +920,11 @@ with the objects outside the context.
 
 \subsection{Fenix Framework}
 
-STMs, PSTMs, DML
-
-\ref{sec:stm}
+The Fenix Framework \cite{fernandes2011strict} is an implementation of
+the Persistent STM architecture described in Section~\ref{sec:pstm},
+using the Domain Modelling Language (DML)
+\cite{cachopo2007development} to describe the application's rich
+domain model.
 
 \cite{cachopo2006versioned}
 
