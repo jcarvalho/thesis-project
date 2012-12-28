@@ -22,12 +22,12 @@
   more and more popular, growing to be something more than simply a
   research topic. On top of that, the concept has been extended to
   encompass persistence, so the concept of Persistent Software
-  Transactional Memories was born. In this thesis, I propose an
+  Transactional Memories (PSTM) was born. In this thesis, I propose an
   extension to PSTM's in order to support the concept of Long-Lived
   Transactions. Some research on the topic has been conducted in the
   field of Database Transactions and Workflow systems. My thesis is
   that supporting Long-Lived Transactions should be done at the
-  infrastructural level on Persistent STM's, so this paper will
+  infrastructural level on Persistent STMs, so this paper will
   describe how those systems can be extended to support Long-Lived
   Transactions.
 \end{abstract}
@@ -744,19 +744,19 @@ accesses to shared data. Managing lock granularity and composability
 is a cumbersome and error-prone task, and may lead to unwanted
 situations such as deadlocks. Over the years, the original concept of
 Hardware Transactional Memories has evolved, giving birth to Software
-Transactional Memories. 
+Transactional Memories.
 
 Software Transactional Memories bring into the realm of programming
 languages, the age-old notion of transactions, well-known in the area
 of DBMSs. However, unlike those, STMs are not concerned with the
 Durability property of the ACID model, and thus, many STM
 implementations have little in common with their database
-counterparts. 
+counterparts.
 
 There have been several recent proposals for STM implementations, such
 as those described in \cite{cachopo2006versioned},
 \cite{herlihy2003software}, \cite{marathe2005adaptive},
-\cite{dice2006transactional}, \cite{riegel2006lazy} and 
+\cite{dice2006transactional}, \cite{riegel2006lazy} and
 \cite{marathe2006lowering}.
 
 STMs use transactions to isolate memory operations in atomic Units of
@@ -812,7 +812,7 @@ Using a PSTM, enterprise application developers no longer have to
 trade correctness for performance. Modern PSTM implementations allow
 for Strict Serializability, while providing better performance than
 regular DBMSs, yielding a throughput increase of up to 23 times
-\cite{fernandes2011strict}. 
+\cite{fernandes2011strict}.
 
 Another advantage of PSTMs is that, like in STMs, the programmer
 benefits from a much simpler and transparent programming model,
@@ -922,15 +922,35 @@ with the objects outside the context.
 
 The Fenix Framework \cite{fernandes2011strict} is an implementation of
 the Persistent STM architecture described in Section~\ref{sec:pstm},
-using the Domain Modelling Language (DML)
-\cite{cachopo2007development} to describe the application's rich
+using a Domain-Specific Language - Domain Modelling Language (DML)
+\cite{cachopo2007development} - to describe the application's rich
 domain model.
 
-\cite{cachopo2006versioned}
+In the Fenix Framework, the programmer describes the domain model of
+the application in the DML, and the Framework is responsible for
+generating an empty class for each entity in the domain, as well as
+the infrastructural code needed to transparently handle object
+persistence.
 
-Describe that the solution will be build on top of the Fenix Framework
-core, plus JVSTM, making it agnostic to the specific persistence
-backend in use.
+Transactional support is guaranteed by the JVSTM
+\cite{cachopo2006versioned}, a multi-version lock-free STM. The STM is
+based upon the concept of versioned boxes, which keep a history of the
+values of the application's shared mutable state. Unlike other STMs,
+read-only transactions never conflict with any other concurrent
+transaction.
+
+The properties (slots and relations) of the Domain Objects are backed
+by the STM, and thus the objects can be transactionally accessed. Once
+a change to a Domain Object's property is made, the change is
+propagated to the DBMS, in commit-time.
+
+As of the writing of this document, the Framework is undergoing a
+major refactoring, in an attempt to separate the Framework's core
+(DML, code generation, programmer API), from the specific Transaction
+Manager and Persistence Backend.
+
+Support for Long-Lived Transactions will be independent of the
+Persistence Backend, 
 
 \subsection{Programming Model}
 
@@ -1063,7 +1083,7 @@ system.
 
 \lstset{language=Java,frame=single,caption={Code for the
     CourseCreationOperation class}, label={lst:courseTBO}}
-\begin{lstlisting}
+\begin{lstlisting}[float]
 public class CourseCreationOperation 
        extends TransactionalBusinessOperation {    
 
