@@ -788,13 +788,40 @@ criteria is ensured by most TM systems.
 
 \subsection{Persistent STMs}
 
-*Talk about the Fenix Framework, how it implements a Persistent STM,
-mention that the Framework brings Strict Serializability to a
-'transparent' programming model* \cite{fernandes2011strict}
-\cite{guerraoui2008correctness} \cite{cachopo2006versioned}
+Over the years, Enterprise Application architecture has evolved at a
+very fast pace. However, one aspect has remained constant: they still
+rely on a relational database to handle both data persistence and
+transactional support. In \cite{fernandes2011strict}, the authors
+argue that such design, while once justified by hardware limitations,
+is no longer suited for today modern applications.
 
-*Talk about how this project aims at extending the FF model to support
-LLT's*
+A new architecture was proposed, using a Software Transactional Memory
+for transaction support at the application server tier, shifting the
+responsibility from the DBMS to the application server. The database
+still plays an important role in this architecture, due to the fact
+that the STM must be extended to support persistence (PSTMs).
+
+By shifting the responsibility for transaction handling to the STM,
+enterprise applications can benefit from the many advancements in the
+STM area, such as multi-core machine scaling, stronger correctness
+guarantees and nonblocking progress conditions such as lock freedom
+\cite{fernandes2011lock}.
+
+Using a PSTM, enterprise application developers no longer have to
+trade correctness for performance. Modern PSTM implementations allow
+for Strict Serializability, while providing better performance than
+regular DBMSs, yielding a throughput increase of up to 23 times
+\cite{fernandes2011strict}. 
+
+Another advantage of PSTMs is that, like in STMs, the programmer
+benefits from a much simpler and transparent programming model,
+allowing for much cleaner and maintainable code, better composability
+by using lock-free data structures, making the process of translating
+business requirements to code much simpler and bug-free.
+
+In this project, I aim at extending the PSTM model, by adding the
+necessary building blocks to support Long-Lived Transactions
+(described in Section~\ref{sec:arch}).
 
 \section{Solution Architecture}
 \label{sec:arch}
@@ -895,6 +922,8 @@ with the objects outside the context.
 STMs, PSTMs, DML
 
 \ref{sec:stm}
+
+\cite{cachopo2006versioned}
 
 Describe that the solution will be build on top of the Fenix Framework
 core, plus JVSTM, making it agnostic to the specific persistence
