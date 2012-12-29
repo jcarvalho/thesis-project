@@ -924,7 +924,11 @@ The Fenix Framework \cite{fernandes2011strict} is an implementation of
 the Persistent STM architecture described in Section~\ref{sec:pstm},
 using a Domain-Specific Language - Domain Modelling Language (DML)
 \cite{cachopo2007development} - to describe the application's rich
-domain model.
+domain model. The Framework was initially developed as part of the
+FenixEDU \footnote{FenixEDU - https://fenix-ashes.ist.utl.pt/} web
+application, and in 2008 was extracted from the code base, into a
+standalone Java framework to develop applications that require a
+transactional and persistent domain model.
 
 In the Fenix Framework, the programmer describes the domain model of
 the application in the DML, and the Framework is responsible for
@@ -942,15 +946,19 @@ transaction.
 The properties (slots and relations) of the Domain Objects are backed
 by the STM, and thus the objects can be transactionally accessed. Once
 a change to a Domain Object's property is made, the change is
-propagated to the DBMS, in commit-time.
+intercepted, and, in commit-time, propagated to the DBMS. For a more
+details on the Framework's implementation, see \cite{fernandes2011strict}.
 
 As of the writing of this document, the Framework is undergoing a
 major refactoring, in an attempt to separate the Framework's core
 (DML, code generation, programmer API), from the specific Transaction
-Manager and Persistence Backend.
+Manager and Persistence Backend. In this new architecture, the
+Framework can work on top of any transaction manager, be it an STM or
+not.
 
-Support for Long-Lived Transactions will be independent of the
-Persistence Backend, 
+Support for Long-Lived Transactions will be build using the JVSTM as
+its transaction manager, but will be agnostic to the persistence
+backend.
 
 \subsection{Programming Model}
 
@@ -1012,7 +1020,7 @@ variable.
 \lstset{language=Java, frame=single, caption={Code to ensure each step
     runs within the operation's transactional context},
   label={lst:tcMethod}}
-\begin{lstlisting}
+\begin{lstlisting}[float]
 TransactionalContext savedContext = getCurrentTC();
 try {
   setCurrentTC(this.getContext());
@@ -1112,8 +1120,53 @@ public class CourseCreationOperation
 
 \subsection{Conflict Handling}
 
-Conflict reduction is a topic for which much research has been done
-over the past few years.
+Even in short transactions, the probability of conflicts is directly
+proportional to the number of records accessed during the
+transaction. This issue is aggravated when dealing with Long-Lived
+Transactions, since the size of the Read Set and the Write Set tend to
+be larger than with short transactions.
+
+Most of the time, not much work is lost if a short transaction aborts,
+and it is relatively simple to automatically restart the transaction
+without requiring user intervention. With Long-Lived Transactions,
+specially those involving user input, automatic restarting techniques
+can not be applied.
+
+Much work can be lost when a long transaction aborts, and it is not
+acceptable to ask the user to input everything again. Conflict
+management is usually split into three areas:
+
+\begin{itemize}
+
+\item {\bf Prevention} Avoiding situations that would cause a
+  conflict. This could be accomplished by restricting the actions
+  available to long business operations and warning the users of
+  potentially conflicting actions (before they are executed).
+
+\item {\bf Detection} Awareness that the current transaction's state
+  is inconsistent and cannot be committed. In short transactions,
+  it is usually simple to restart the transaction once a conflict is
+  detected. In long transactions, not being able to commit can entail
+  a big penalty. It is important to detect the reason preventing the
+  transaction from committing, pinpointing the cause of the
+  problem.
+
+\item {\bf Recovery} Recovering from a conflict after its
+  detection. With detailed information regarding the cause of the
+  conflict, recovery can be attempted by asking the user to
+  re-introduce only the data that caused the conflict, hopefully
+  solving it.
+
+\end{itemize}
+
+Performing conflict management in a domain-dependent manner can
+present itself as a major challenge. However, it may be necessary when
+dealing with Long-Lived Transactions.
+
+Implementing a mechanism to provide domain-dependent conflict
+management requires a big effort, and is out of the scope of this
+work. However, given the time, I shall look for ways to aid
+programmers with this issue. 
 
 \section{Evaluation}
 
@@ -1122,8 +1175,6 @@ Programmer effort needed to use LLT's - Performance, throughput,
 Commit/Abort ratios, interleaving LLTs with 'regular' transactions
 
 \section{Conclusion}
-
-\subsection{Schedule}
 
 \bibliography{thesis.bib} \bibliographystyle{plain}
 \end{document}
