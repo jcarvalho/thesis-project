@@ -947,7 +947,8 @@ The properties (slots and relations) of the Domain Objects are backed
 by the STM, and thus the objects can be transactionally accessed. Once
 a change to a Domain Object's property is made, the change is
 intercepted, and, in commit-time, propagated to the DBMS. For a more
-details on the Framework's implementation, see \cite{fernandes2011strict}.
+details on the Framework's implementation, see
+\cite{fernandes2011strict}.
 
 As of the writing of this document, the Framework is undergoing a
 major refactoring, in an attempt to separate the Framework's core
@@ -1144,12 +1145,11 @@ management is usually split into three areas:
   potentially conflicting actions (before they are executed).
 
 \item {\bf Detection} Awareness that the current transaction's state
-  is inconsistent and cannot be committed. In short transactions,
-  it is usually simple to restart the transaction once a conflict is
+  is inconsistent and cannot be committed. In short transactions, it
+  is usually simple to restart the transaction once a conflict is
   detected. In long transactions, not being able to commit can entail
   a big penalty. It is important to detect the reason preventing the
-  transaction from committing, pinpointing the cause of the
-  problem.
+  transaction from committing, pinpointing the cause of the problem.
 
 \item {\bf Recovery} Recovering from a conflict after its
   detection. With detailed information regarding the cause of the
@@ -1166,15 +1166,44 @@ dealing with Long-Lived Transactions.
 Implementing a mechanism to provide domain-dependent conflict
 management requires a big effort, and is out of the scope of this
 work. However, given the time, I shall look for ways to aid
-programmers with this issue. 
+programmers with this issue.
 
 \section{Evaluation}
 
-The final evaluation of this project will be measured in terms of: -
-Programmer effort needed to use LLT's - Performance, throughput,
-Commit/Abort ratios, interleaving LLTs with 'regular' transactions
+In order to evaluate this work, I will attempt to measure the effort
+required to implement a long business transaction, comparing the
+currently available tools against the implementation of my proposed
+architecture.
+
+I will also measure the effort required to refactor existing code, to
+use this new solution, by selecting a functionality in the FenixEDU
+web application, and refactoring it.
+
+A simple implementation of the example presented in
+Section~\ref{sec:what} will be devised, both using the current and the
+new architecture. With those two implementations, I will measure the
+performance hit of my new solution.
 
 \section{Conclusion}
 
-\bibliography{thesis.bib} \bibliographystyle{plain}
+Many enterprise applications have requirements involving operations
+which may span very long periods of time. Yet, most applications use
+persistence layers that do not cope well with Long-Lived Transactions.
+
+Thus, many programmers have found clever ways to implement their
+requirements using the tools at their disposal. I presented several of
+those implementations: keeping the context in the user's session,
+changing the domain to contain state information, application-level
+locks, application-level consistency checks, etc.
+
+In this document, I proposed an architecture that allows programmers
+to declare long running operations at an infrastructural level, using
+the same tools as before, without sacrificing consistency and without
+polluting the domain.
+
+The primary goal of this work is to implement the proposed
+architecture within the Fenix Framework, and ultimately, its
+application in the Fenix web application.
+
+\clearpage \bibliography{thesis.bib} \bibliographystyle{plain}
 \end{document}
