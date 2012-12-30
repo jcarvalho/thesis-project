@@ -600,12 +600,26 @@ unlike regular transaction systems, they typically provide the means
 for the user to determine the actions necessary to recover from
 failure and consistency issues.
 
-\subsubsection{Workflows as Long-Running Activities}
+\subsubsection{Implementing Transactional Workflows}
 
 In \cite{dayal1990organizing}, a workflow is seen as a {\it
   Long-Running Activity}, and is modeled as a set of execution units
 that may consist recursively of other activities, or top-level
-transactions. 
+transactions. Control and data flow is specified either statically in
+the activity's {\it script}, or dynamically using
+Event-Condition-Action (ECA) rules. This model contemplates
+compensation, execution unit communication, activity status queries
+and exception handling.
+
+In \cite{weikum1993extending}, the author suggests that semantic
+transaction concepts be merged with workflow concepts to promote
+consistent and reliable workflow systems. The author defines a
+transactional workflow to be a control sphere that binds these
+transactions, using dependencies to enforce as much behavioral
+consistency as possible.
+
+For a more comprehensive review on the topic, refer to
+\cite{worah1997transactions}.
 
 \subsubsection{Sagas}
 
