@@ -436,19 +436,95 @@ mindset of the SQL-92 standard.
 
 \subsubsection{Concurrency Control}
 
-``Concurrent execution should not cause application programs to
-malfunction''. This sentence is called the First Law of Concurrency
-Control \cite{reuter1993transaction}.
+Concurrency Control is the mechanism that ensures that ``Concurrent
+execution should not cause application programs to malfunction''
+\cite{reuter1993transaction}. This property was coined in 1993 as the
+first law of Concurrency Control, by the Database-guru Jim Gray. In
+fact, concurrency control mechanisms are what ensure that the ACID
+properties of transactions are kept under an environment with
+concurrent access to shared mutable data. Research on the topic dates
+back to the 1970s\cite{rosenkrantz1978system} and
+1980s\cite{gray1981transaction}, and is still a hot topic nowadays.
 
-*Mention classic books*
+There are two main categories of Concurrency Control:
 
-*Relaxation of transactional properties*
+\begin{itemize}
 
-*Several Papers: \cite{hagmann1991implementing} \cite{garcia1987sagas}
-\cite{salem1989altruistic}
+\item {\bf Optimistic} Delaying integrity checking until the end of
+  the transaction, without blocking any of its reads and writes.
+  Optimistic concurrency control allows for greater concurrency, since
+  concurrent operations can proceed without interfering with each
+  other. On the other hand, given that integrity is only checked in
+  the end of the transaction, conflicts are not detected until all the
+  work is done and the transaction has to be restarted. It is
+  typically implemented by Multiversion Concurrency Control and
+  Timestamp Ordering mechanisms\cite{Bernstein1981}.
 
-*Mention that the best implementations of LLT's at the database level
-provide only Serializability at best*
+\item {\bf Pessimistic} Every data access in the transaction acquires
+  a lock before proceeding. During the acquisition process, if an
+  integrity violation is detected, the transaction is aborted, rolling
+  back every write and releasing every held lock. Once the transaction
+  is finished, it is marked as committed, and all the locks are
+  released. The main method in this category is Two-Phase
+  Locking\cite{Bernstein1981}.
+
+\end{itemize}
+
+Historically, pessimistic concurrency control has been the dominant
+category, and most Relational Databases implement it.
+
+Due to this fact, most of the work regarding Long-Lived Transaction
+support in DBMSs is related with locking approaches. In fact, one of
+the main reasons why databases do not cope well with long
+transactions, is that the transaction holds a lock for each accessed
+record. In lock-based DBMSs, the frequency of deadlock goes up with
+the square of the concurrency level and the fourth power of the
+transaction size\cite{gray1981transaction}. Thus, several strategies
+have been devised to minimize the probability of deadlocks on
+Long-Lived Transactions.
+
+\subsubsection{Relaxation of Transactional Properties}
+
+Given that holding the locks for the duration of the transaction was
+not viable, the first proposed solution for this problem was to accept
+a lower degree of consistency, by allowing transactions to release
+their locks before commit.
+
+In \cite{gray1981transaction}, the author proposed a model in which
+only ``active'' transactions (the ones currently updating the
+database) hold locks. ``Sleeping'' transactions (not currently
+updating the database - also known as ``User think-time'') do not hold
+any locks. This means that the isolation property is broken, since
+other transactions will be able to see an uncommitted value.
+
+In \cite{salem1989altruistic}, the authors propose an extension to
+Two-Phase locking, called altruistic locking. This extension provides
+the concurrency control manager with a set of rules that allow it to
+release locks early in the transaction. The altruistic protocol takes
+advantage of the transaction's data access pattern. In particular, it
+takes advantage of the knowledge that a transaction no longer needs
+access to a data object that is has locked. Transactions can then
+issue ``release'' operations, indicating that a certain piece of data
+will no longer be accessed. Other transactions will be allowed to
+concurrently access this data, while agreeing to abide by certain
+restrictions, put in place to ensure that all transactions see a
+consistent database state. 
+
+\subsubsection{Transaction Logs}
+
+Another issue with Long-Lived Transaction in DBMSs, is due to the fact
+that, in order to perform crash recovery, they use a Transaction Log,
+containing a record of every operation performed in the database. The
+size of said log is finite, and over time, the log fills up. Old
+Long-Lived Transactions must be aborted since some of their log
+records will be overwritten by more recent transactions. 
+
+In \cite{hagmann1991implementing}, the authors propose ``Log Record
+Forwarding'', as a means to relocate log entries belonging to
+Long-Lived Transactions, so they will not be aborted for that
+reason. In this proposal, active records in the log area are copied
+(forwarded) to the end of the log, thus surviving another
+log-reclaiming cycle.
 
 \subsubsection{Sagas}
 \label{sec:sagas}
