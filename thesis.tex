@@ -251,10 +251,11 @@ are created, and must be managed manually, kept in the user's session
 context, outside the domain.
 
 As the complexity of the domain, and the number of objects manipulated
-by the operation, grow, the harder it becomes for the programmer to
-manually. Ultimately, there is a copy of the whole of the domain
-stored in the user's session, waiting for the last transaction to copy
-all the information back to the domain transactionally.
+by the operation, grow, it becomes harder for the programmer to
+manually manage the data that must be kept. Ultimately, there is a
+copy of the whole of the domain stored in the user's session, waiting
+for the last transaction to transactionally update the domain with all
+the information input by the user.
 
 This is the opposite of what would be desirable to the programmer, she
 should be able to operate directly on the domain.
@@ -961,13 +962,15 @@ kept persistently - great for Unit testing), Relational Databases,
 NoSQL databases, Key-Value stores, etc. It also allows for modules,
 which can contribute with their own domain, to be plugged into the
 Framework, to extend its functionalities. One such example is a module
-which contains an implementation of persistent B+ Trees
-\footnote{http://en.wikipedia.org/wiki/B+\_tree}
+which contains an implementation of persistent B+
+Trees\footnote{http://en.wikipedia.org/wiki/B+\_tree}.
 
 Given the number of possible persistence backends, support for
 Long-Lived Transactions will be implemented as a module depending on
 the JVSTM for transaction management, with no dependencies on any
-persistence backend. This allows for more flexibility,
+persistence backend. This allows for a greater number of developers to
+benefit from Long-Lived Transactions in the Fenix Framework,
+regardless of the backend they are using.
 
 \subsection{Programming Model}
 
