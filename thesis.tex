@@ -586,50 +586,63 @@ to workflows. Transactional Workflows provide functionality required
 by each workflow process (such as task collaboration), which is
 usually not available in typical DBMSs. This however, does not imply
 that workflows are similar to database transactions, nor that they
-support all the ACID properies (namely concurrency control, backward
+support all the ACID properties (namely concurrency control, backward
 recovery and data consistency).
 
 Workflow Management Systems (WFMSs) are the systems that manage
 user-defined Workflow processes for different types of jobs and
-processes.
+processes. It is the WFMS that provides the transactional properties
+to the transactional workflow. These include transaction management
+techniques such as logging, compensation, etc..
 
-One of the biggest challenges with WFMS is that due to its disparity
-from the transaction models provided by the ``regular'' transaction
-support systems, such as Long-Lived Transaction support. Regarding
-correctness and reliability, we are facing major differences, since
-WFMSs provide no significant support for recovery and failure
-handling, leaving the user with the task of determining the actions
-necessary to recover consistency issues and determining which
-activities are needed to recover from an exception, while
-transactional systems embrace recovery as a core concept.
+Since their support for recovery and failure handling is lacking,
+unlike regular transaction systems, they typically provide the means
+for the user to determine the actions necessary to recover from
+failure and consistency issues.
 
-In most WFMSs the execution of a process is persistent, in the sense
-that in case of a failure, the process will stop, until the failures
-have been fixed, and then resumed. In case the system fails while an
-activity is executing, the system is not notified, and the work
-performed by that activity must be manually reverted.
+\subsubsection{Workflows as Long-Running Activities}
+
+In \cite{dayal1990organizing}, a workflow is seen as a {\it
+  Long-Running Activity}, and is modeled as a set of execution units
+that may consist recursively of other activities, or top-level
+transactions. 
 
 \subsubsection{Sagas}
 
 The concept of Sagas was previously presented in
-Section~\ref{sec:sagas}. 
+Section~\ref{sec:sagas}. In this section, I will show how sagas can be
+implemented on top of Workflow Management Systems.
 
-Due to its nature, it is straightforward to translated a saga into a
-workflow process. Each activity in the process is modeled as a
-sub-transaction, and has an associated compensating transaction. Each
-activity has an incoming condition which evaluates to true when the
-previous sub-transaction is successfully committed (meaning that the
-previous activity was concluded), meaning that execution of the
-process can proceed.
+All the sub-transactions of the saga are grouped into a block (Forward
+Block). The control flow within the block represents that of the saga,
+with each sub-transaction represented as an activity. Every activity
+has an incoming transition condition, which is that the previous
+activity has finished successfully (i.e. the corresponding transaction
+has committed).
 
-If one of the sub-transactions aborts, the corresponding outgoing
-condition is evaluated to false, and no other activity in that path
-will be executed, making the process evolve in the path of the
-compensating activities.
+If a transaction aborts, the corresponding outgoing condition will
+evaluate to false, and no other activity in the block will
+execute. When execution of the block terminates, its data container
+will contain a list of the status of each activity. In this case,
+control is passed to a second block (Compensation Block), containing
+the compensating activities in reverse order.
 
-\subsubsection{Why are these systems unfit}
+When the compensation block is executed, all the conditions that
+correspond to activities that executed in the Forward Block are
+activated, causing the compensating activities to be executed in
+order.
 
-\cite{798492}
+\subsubsection{Implementing Long-Lived Transactions using WFMSs}
+
+As described in the previous sections, several attempts have been made
+to implement Advanced Transaction Models on top of Workflow Systems,
+as a means of supporting Long-Lived Transactions.
+
+Several other methods have been proposed in the
+literature\cite{798492} \cite{alonso1996advanced}. However, such
+implementations are not suitable for the requirements defined in
+Section~\ref{sec:what}, due to the fact that most WFMSs do not provide
+full ACID properties.
 
 \subsection{Object/Relational Mapping}
 
