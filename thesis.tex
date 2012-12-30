@@ -61,7 +61,7 @@ Oriented design patterns.
 
 My focus throughout this project will be on applications in which the
 Domain Objects are persistent, transactionally updated, and handled
-transparently at an infrastructural level (meaning the programmer may
+transparently at an infrastructural level (meaning that the programmer should
 be mostly unaware of the persistence layer).
 
 \section{Long-Lived Transactions}
@@ -334,7 +334,10 @@ Long-Lived Transactions.
 
 The example provided above is targeted at applications with a rich
 domain model, however there are many applications built directly on
-top of DBMS's that
+top of DBMS's. Those applications typically have requirements similar
+to those with a rich domain model, however, they must rely directly on
+the DBMS for transactional support, and thus, it becomes clear that
+DBMSs should support Long-Lived Transactions.
 
 \subsubsection{Workflow Systems}
 
@@ -368,11 +371,41 @@ Database Management Systems, Workflow Systems and Object Oriented
 Transactional Systems.
 
 Also, due to its relevance regarding the solution described in section
-4, I briefly present Software Transactional Memories, and how they
-cope with short lived transactions.
+4, I briefly present Software Transactional Memories (STM), Nested
+Transactions, Persistent STMs, and how they cope with short lived
+transactions.
 
 \subsection{Database world}
 \label{sec:rdbms}
+
+Transactions are a age-old notion in the database world. They comprise
+a ``Unit of Work'' performed within a Database Management System, and
+ensure that concurrent access to shared mutable data is done in a
+consistent way.
+
+By definition, a database transaction must provide the four ACID properties:
+
+\begin{itemize}
+
+\item {\bf Atomicity} Requires that in a transaction, all database
+  operations either {\it all} occur, or {\it nothing} occurs. This
+  property guarantees that the transaction is indivisible and
+  irreductible. 
+
+\item {\bf Consistency} Requires that every transaction will bring the
+  database from one valid state to another (according to a series of
+  consistency predicates defined for the database).
+
+\item {\bf Isolation} Requires that individual record updates within a
+  transaction are not visible outside of that transaction. When the
+  transaction commits, all record updates are visible to the rest of
+  the system.
+
+\item {\bf Durability} Requires that once a transaction is committed,
+  it will survive permanently. This means that once a transaction is
+  committed, its effects on the data will be permanent.
+
+\end{itemize}
 
 \subsubsection{Isolation Levels}
 \label{sec:isolation}
