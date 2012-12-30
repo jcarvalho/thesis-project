@@ -436,14 +436,16 @@ mindset of the SQL-92 standard.
 
 \subsubsection{Concurrency Control}
 
+``Concurrent execution should not cause application programs to
+malfunction''. This sentence is called the First Law of Concurrency
+Control \cite{reuter1993transaction}.
+
 *Mention classic books*
 
 *Relaxation of transactional properties*
 
 *Several Papers: \cite{hagmann1991implementing} \cite{garcia1987sagas}
 \cite{salem1989altruistic}
-
-\subsubsection{Nested Transactions}
 
 *Mention that the best implementations of LLT's at the database level
 provide only Serializability at best*
@@ -786,6 +788,77 @@ always observes a {\it consistent} state of the system.'', meaning
 that unlike Serializability, even {\it non-committed} transactions are
 prevented from accessing inconsistent states. This correctness
 criteria is ensured by most TM systems.
+
+\subsection{Nested Transactions}
+
+The best practices in software development encourage programmers to
+modularize their applications and have them abide by well-defined
+interfaces. As we have seen, lock-based approaches do not cope well
+with this principle, since the programmer must be aware of module's
+internal locking conventions. Transactions however do not have this
+limitation, allowing for better composability.
+
+In the transaction paradigm, it would then be common for application
+code to make a call to a library which uses transactions to protect
+its shared internal state. In this scenario, the transaction created
+for by library would be {\it nested} in the outer (application-``owned'') 
+transaction. Nested Transactions are an extension to the basic
+transaction structure, supporting multiple levels of transactions:
+transactions that may contain other sub-transactions, forming a
+transaction tree. Nested Transactions have been long used in the
+database world, and many of its concepts have been adapted to
+transactional memories \cite{worah1997transactions}.
+
+Consider the kind of monolithic transactions commonly found in
+enterprise applications. In such transactions, the volume of work that
+must be done if the transactions needs to be rolled-back is
+increased. Using nested transactions, smaller portions of the work can
+be done in isolation, each in a nested transaction. If one of those
+portions fails, only that portion needs to be rolled-back, and an
+attempt can be made to compensate for that failure. Similarly, clients
+of opaque libraries may suffer performance hits if the transaction
+fails because of the work performed in said libraries.
+
+In \cite{moss2006nested}, Moss and Hosking defined two types of
+nesting: Closed and Open.
+
+\subsubsection{Closed Nesting}
+
+A transaction is either {\it top-level}, which is similar to a
+non-nested transaction, or is nested within a {\it parent}
+transaction. In this model, only transactions with no current children
+can access data. Transactions accumulate Read and Write sets, which
+will determine the outcome of the transaction. When a transaction
+reads a value, it sees either the value in its own read or write set,
+or the value seen by its parent (a top-level transaction sees the
+latest value).
+
+When a nested transaction commits, its read and write sets are merged
+with the ones of its parent. It is only when the top-level transaction
+commits that its writes become permanent. If the nested transaction
+aborts, its read and write sets are discarded.
+
+\subsubsection{Open Nesting}
+
+Open Nested Transactions relax the isolation requirements by making
+the results of committed sub-transactions visible to other
+concurrently running transactions. When a sub-transaction commits,
+instead of merging the write set with its parent's, the writes are
+committed at the top-level. This way, a higher degree of concurrency
+is achieved, since resources may be released earlier and conflict
+detection can be applied at a higher level. It is up to the
+implementations to provide the mechanisms to handle recording of
+necessary compensating actions in case an ancestor transaction aborts.
+
+\subsubsection{Nested and Long-Lived Transactions}
+
+Nested Transactions present many similarities with Long-Lived
+Transactions. In both cases there is a top-level transaction, which
+can be divided in several smaller steps. Open nesting uses the same
+basic principle as the tecniques described in previous sections, based
+on the relaxation of transactional properies, and compensating
+actions. Closed Nesting is similar to the desired properties presented
+in Section~\ref{sec:what}.
 
 \subsection{Persistent STMs}
 \label{sec:pstm}
