@@ -925,13 +925,13 @@ the Persistent STM architecture described in Section~\ref{sec:pstm},
 using a Domain-Specific Language - Domain Modelling Language (DML)
 \cite{cachopo2007development} - to describe the application's rich
 domain model. The Framework was initially developed as part of the
-FenixEDU \footnote{FenixEDU - https://fenix-ashes.ist.utl.pt/} web
-application, and in 2008 was extracted from the code base, into a
-standalone Java framework to develop applications that require a
-transactional and persistent domain model.
+FenixEDU\footnote{FenixEDU - https://fenix-ashes.ist.utl.pt/} web
+application. In 2008, the framework was extracted from the
+application's code base, into a standalone Java framework to develop
+applications that require a transactional and persistent domain model.
 
 In the Fenix Framework, the programmer describes the domain model of
-the application in the DML, and the Framework is responsible for
+the application using the DML, and the Framework is responsible for
 generating an empty class for each entity in the domain, as well as
 the infrastructural code needed to transparently handle object
 persistence.
@@ -939,9 +939,11 @@ persistence.
 Transactional support is guaranteed by the JVSTM
 \cite{cachopo2006versioned}, a multi-version lock-free STM. The STM is
 based upon the concept of versioned boxes, which keep a history of the
-values of the application's shared mutable state. Unlike other STMs,
-read-only transactions never conflict with any other concurrent
-transaction.
+values of the application's shared mutable state. It was designed to
+operate in environments with a high read/write ratio, so, unlike other
+STMs, read-only transactions never conflict with any other concurrent
+transaction (due to the fact that every read will read the version
+that was committed when the transaction started).
 
 The properties (slots and relations) of the Domain Objects are backed
 by the STM, and thus the objects can be transactionally accessed. Once
@@ -953,13 +955,19 @@ details on the Framework's implementation, see
 As of the writing of this document, the Framework is undergoing a
 major refactoring, in an attempt to separate the Framework's core
 (DML, code generation, programmer API), from the specific Transaction
-Manager and Persistence Backend. In this new architecture, the
-Framework can work on top of any transaction manager, be it an STM or
-not.
+Manager and Persistence Backend. This modular architecture allows the
+Framework to work on top of a variety of databases: none (data is not
+kept persistently - great for Unit testing), Relational Databases,
+NoSQL databases, Key-Value stores, etc. It also allows for modules,
+which can contribute with their own domain, to be plugged into the
+Framework, to extend its functionalities. One such example is a module
+which contains an implementation of persistent B+ Trees
+\footnote{http://en.wikipedia.org/wiki/B+_tree}
 
-Support for Long-Lived Transactions will be build using the JVSTM as
-its transaction manager, but will be agnostic to the persistence
-backend.
+Given the number of possible persistence backends, support for
+Long-Lived Transactions will be implemented as a module depending on
+the JVSTM for transaction management, with no dependencies on any
+persistence backend. This allows for more flexibility,
 
 \subsection{Programming Model}
 
