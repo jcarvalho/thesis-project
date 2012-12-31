@@ -61,8 +61,8 @@ Oriented design patterns.
 
 My focus throughout this project will be on applications in which the
 Domain Objects are persistent, transactionally updated, and handled
-transparently at an infrastructural level (meaning that the programmer should
-be mostly unaware of the persistence layer).
+transparently at an infrastructural level (meaning that the programmer
+should be mostly unaware of the persistence layer).
 
 \section{Long-Lived Transactions}
 
@@ -383,14 +383,15 @@ a ``Unit of Work'' performed within a Database Management System, and
 ensure that concurrent access to shared mutable data is done in a
 consistent way.
 
-By definition, a database transaction must provide the four ACID properties:
+By definition, a database transaction must provide the four ACID
+properties:
 
 \begin{itemize}
 
 \item {\bf Atomicity} Requires that in a transaction, all database
   operations either {\it all} occur, or {\it nothing} occurs. This
   property guarantees that the transaction is indivisible and
-  irreductible. 
+  irreductible.
 
 \item {\bf Consistency} Requires that every transaction will bring the
   database from one valid state to another (according to a series of
@@ -464,7 +465,7 @@ transaction are guaranteed to see a consistent snapshot of the
 database, and the transaction itself will only commit if no updates it
 has made conflict with any concurrent updates since the
 snapshot. Snapshot isolation arose from work on Multiversion
-Concurrency Control, and thus did not make it into the lock-based
+Concurrency Control, and thus did not make it into the lock-centered
 mindset of the SQL-92 standard.
 
 \subsubsection{Concurrency Control}
@@ -504,7 +505,7 @@ There are two main categories of Concurrency Control:
 \end{itemize}
 
 Historically, pessimistic concurrency control has been the dominant
-category, and most Relational Databases implement it.
+category, and even nowadays, most Relational Databases implement it.
 
 Due to this fact, most of the work regarding Long-Lived Transaction
 support in DBMSs is related with locking approaches. In fact, one of
@@ -531,17 +532,17 @@ any locks. This means that the isolation property is broken, since
 other transactions will be able to see an uncommitted value.
 
 In \cite{salem1989altruistic}, the authors propose an extension to
-Two-Phase locking, called altruistic locking. This extension provides
-the concurrency control manager with a set of rules that allow it to
-release locks early in the transaction. The altruistic protocol takes
-advantage of the transaction's data access pattern. In particular, it
-takes advantage of the knowledge that a transaction no longer needs
-access to a data object that is has locked. Transactions can then
-issue ``release'' operations, indicating that a certain piece of data
-will no longer be accessed. Other transactions will be allowed to
-concurrently access this data, while agreeing to abide by certain
+Two-Phase locking, called {\it altruistic locking}. This extension
+provides the concurrency control manager with a set of rules that
+allow it to release locks early in the transaction. The altruistic
+protocol takes advantage of the transaction's data access pattern. In
+particular, it takes advantage of the knowledge that a transaction no
+longer needs access to a data object that is has locked. Transactions
+can then issue ``release'' operations, indicating that a certain piece
+of data will no longer be accessed. Other transactions will be allowed
+to concurrently access this data, while agreeing to abide by certain
 restrictions, put in place to ensure that all transactions see a
-consistent database state. 
+consistent database state.
 
 \subsubsection{Transaction Logs}
 
@@ -550,7 +551,7 @@ that, in order to perform crash recovery, they use a Transaction Log,
 containing a record of every operation performed in the database. The
 size of said log is finite, and over time, the log fills up. Old
 Long-Lived Transactions must be aborted since some of their log
-records will be overwritten by more recent transactions. 
+records will be overwritten by more recent transactions.
 
 In \cite{hagmann1991implementing}, the authors propose ``Log Record
 Forwarding'', as a means to relocate log entries belonging to
@@ -591,14 +592,14 @@ causing the previously executed sub-transactions to be compensated).
 
 Martin Fowler, in his book ``Patterns of Enterprise Application
 Architecture'' \cite{fowler2003patterns}, introduces a series of
-``Offline Concurrency Patters'', as the building blocks for Long-Lived
-Transaction support at the application level. In his patterns, Fowler
-assumes that a Long-Lived Transaction is run as a series of
-short-lived system transactions, whose transactional support is
-provided by the underlying DBMS.
+``Offline Concurrency Patterns'', as the building blocks for
+Long-Lived Transaction support at the application level. In his
+patterns, Fowler assumes that a Long-Lived Transaction is run as a
+series of short-lived system transactions, whose transactional support
+is provided by the underlying DBMS.
 
 The patterns provide a workaround for the fact that the ACID
-properties are broken by using several system transactions.
+properties are broken when using several system transactions.
 
 \begin{itemize}
 \item {\bf Optimistic Offline Lock} This pattern solves the problem by
@@ -702,7 +703,7 @@ Workflow Management Systems (WFMSs) are the systems that manage
 user-defined Workflow processes for different types of jobs and
 processes. It is the WFMS that provides the transactional properties
 to the transactional workflow. These include transaction management
-techniques such as logging, compensation, etc..
+techniques such as logging, compensation, etc.
 
 Since their support for recovery and failure handling is lacking,
 unlike regular transaction systems, they typically provide the means
@@ -793,9 +794,9 @@ DatabaseObjects (.NET), NHibernate (Hibernate for .NET), CoreData
 (Objective-C), CodeIgniter (PHP) and Django (Python).
 
 In order to provide transactional support for domain objects, ORM's
-typically use delegate transaction management to the underlying
-Database (which is assumed to provide full ACID support). In fact, as
-of this writing, all the examples shown above operate this way. Thus,
+typically delegate transaction management to the underlying Database
+(which is assumed to provide full ACID support). In fact, as of this
+writing, all the examples shown above operate this way. Thus,
 Long-Lived Transaction support in ORM tools is largely dependent on
 the underlying DBMS, presenting the same challenges as described in
 \ref{sec:rdbms}.
@@ -813,8 +814,8 @@ optimistic concurrency control (or optimistic locking). In this
 context, optimistic locking is used to prevent the database from
 holding on to critical resources, potentially causing high degrees of
 contention.  This is achieved by operating directly on the domain
-objects, potentially delaying the propagation of the changes made to
-the objects.
+objects (in memory), delaying the propagation of the changes to the
+database as much as possible.
 
 As part of the JPA, there is the concept of Version field. This field
 allows ``disconnected operation'', meaning that the reads/writes from
@@ -869,7 +870,7 @@ the topic is in order.
 
 The original idea behing Transactional Memories (TM) is to provide
 efficient lock-free data structures for highly concurrent systems
-\cite{herlihy1993transactional} using hardware. Its main goal is to
+\cite{herlihy1993transactional} using hardware. Its main goal was to
 free programmers from using locks and monitors to manage concurrent
 accesses to shared data. Managing lock granularity and composability
 is a cumbersome and error-prone task, and may lead to unwanted
@@ -921,9 +922,9 @@ criteria is ensured by most TM systems.
 
 The best practices in software development encourage programmers to
 modularize their applications and have them abide by well-defined
-interfaces. As we have seen, lock-based approaches do not cope well
-with this principle, since the programmer must be aware of module's
-internal locking conventions. Transactions however do not have this
+interfaces. Lock-based approaches do not cope well with this
+principle, since the programmer must be aware of module's internal
+locking conventions. Transactions, on the other hand, do not have this
 limitation, allowing for better composability.
 
 In the transaction paradigm, it would then be common for application
@@ -941,11 +942,11 @@ Consider the kind of monolithic transactions commonly found in
 enterprise applications. In such transactions, the volume of work that
 must be done if the transactions needs to be rolled-back is
 increased. Using nested transactions, smaller portions of the work can
-be done in isolation, each in a nested transaction. If one of those
-portions fails, only that portion needs to be rolled-back, and an
-attempt can be made to compensate for that failure. Similarly, clients
-of opaque libraries may suffer performance hits if the transaction
-fails because of the work performed in said libraries.
+be done in isolation, each within a nested transaction. If one of
+those portions fails, only that portion needs to be rolled-back, and
+an attempt can be made to compensate for that failure. Similarly,
+clients of opaque libraries may suffer performance hits if the
+transaction fails because of the work performed in said libraries.
 
 In \cite{moss2006nested}, Moss and Hosking defined two types of
 nesting: Closed and Open.
@@ -983,8 +984,8 @@ necessary compensating actions in case an ancestor transaction aborts.
 Nested Transactions present many similarities with Long-Lived
 Transactions. In both cases there is a top-level transaction, which
 can be divided in several smaller steps. Open nesting uses the same
-basic principle as the tecniques described in previous sections, based
-on the relaxation of transactional properies, and compensating
+basic principle as the techniques described in previous sections,
+based on the relaxation of transactional properties, and compensating
 actions. Closed Nesting is similar to the desired properties presented
 in Section~\ref{sec:what}.
 
@@ -1391,10 +1392,10 @@ I will also measure the effort required to refactor existing code, to
 use this new solution, by selecting a functionality in the FenixEDU
 web application, and refactoring it.
 
-A simple implementation of the example presented in
-Section~\ref{sec:what} will be devised, both using the current and the
-new architecture. With those two implementations, I will measure the
-performance hit of my new solution.
+An implementation of the example presented in Section~\ref{sec:what}
+will be devised, both using the current and the new architecture. With
+those two implementations, I shall measure the performance hit of my
+new solution.
 
 \section{Conclusion}
 
@@ -1415,7 +1416,8 @@ polluting the domain.
 
 The primary goal of this work is to implement the proposed
 architecture within the Fenix Framework, and ultimately, its
-application in the Fenix web application.
+application in the Fenix web application, making Long-Lived
+Transactions easier to develop.
 
 \clearpage \bibliography{thesis.bib} \bibliographystyle{plain}
 \end{document}
