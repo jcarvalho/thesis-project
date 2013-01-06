@@ -1065,8 +1065,8 @@ of the operation.
     \begin{class}[text width=1.2cm,minimum height=5em]{Log}{4,-2}
     \end{class}
 
-    \begin{abstractclass}[text width=3cm]{DomainObject}{8,0}
-    \end{abstractclass}
+    \begin{class}[text width=3cm]{DomainObject}{8,0}
+    \end{class}
 
     \draw [umlcd style school] (TransactionalContext) |- 
     node[below]{Read Set} (Log)
@@ -1079,14 +1079,14 @@ of the operation.
     node[near end, right]{*};
 
     \draw [umlcd style school] (DomainObject) --
-    node[below]{{ }{ }Value} (Log)
-    node[near start, right]{{ }1}
-    node[near end, above]{1};
+    node[left]{Object} (Log)
+    node[near start, above]{1}
+    node[near end, left]{*};
 
     \draw [umlcd style school] (DomainObject) |-
-    node[below]{object} (Log)
+    node[below]{Value} (Log)
     node[near start, right]{1}
-    node[near end, below]{*};
+    node[near end, below]{1};
 
   \end{tikzpicture}
 
