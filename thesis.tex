@@ -36,13 +36,29 @@
 
 For many years, enterprise applications were developed using
 two-tiered architectures. In such architectures, there was typically a
-mainframe with great computational power.
+mainframe with great computational power, which served requests from
+thin clients. As hardware evolved over the years, so did the
+development of enterprise applications. Nowadays, most applications
+are developed using a three-tier architecture: Data Tier, Application
+Tier and Presentation Tier. Despite this separation, most applications
+still rely on the Data Tier for transactional support.
+
+With the adoption of multicore architectures, {\it Software
+  Transactional Memory} (STM) has seen many advancements over the past
+years, and enterprise applications are now beginning to use them for
+transactional support \cite{fernandes2011strict}, instead of relying
+on the Database.
 
 Long-Lived Transactions were first described in 1981 as ``[..]
 transactions with lifetimes of a few days or
-weeks''\cite{gray1981transaction}. 
+weeks''\cite{gray1981transaction}. Many enterprise applications have
+requirements for such transactions, and thus, several approaches were
+devised to cope with them, as described in Section~\ref{sec:related}.
 
--- starts here for now --
+My thesis consists on making Long-Lived Transactions easier to develop
+on top of a Persistent STM, by providing infrastructural-level
+support, relieving the programmer from all the effort that is required
+to implement them.
 
 In this project, I aim at adding support for Long-Lived Transactions
 in applications with Rich Domain Models.  A Rich Domain Model is ``An
@@ -59,7 +75,17 @@ part of some Object-Oriented design patterns.
 My main target throughout this project are enterprise applications in
 which the Domain Objects are persistent, transactionally updated, and
 handled transparently at an infrastructural level (meaning that the
-programmer should be mostly unaware of the persistence layer).
+programmer should be mostly unaware of the persistence/data tier).
+
+This document is organized as follows. In Section 2, I will present
+Long-Lived Transactions in more detail, as well as explaining why they
+are difficult to implement without infrastructural support. In Section
+3, I present existing work on Long-Lived Transaction implementation
+and support, as well as explain why they are not suited for our
+requirements. In Section 4, I present the architecture of my solution,
+and describe the Fenix Framework, which will be the base for this
+work. In Section 5, I explain how the implementation will be
+evaluated. Finally, in Section 6, I shall draw some conclusions.
 
 \section{Long-Lived Transactions}
 
@@ -361,6 +387,7 @@ should be transparent, and at an infrastructural level, relieving the
 programmer from this burden.
 
 \section{Related Work}
+\label{sec:related}
 
 In this section I describe the various topics in which an attempt to
 solve the problem of Long Lived Transactions has been made, namely
