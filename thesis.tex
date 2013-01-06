@@ -552,8 +552,8 @@ Another problem with Long-Lived Transactions in DBMSs results from the
 use of a Transaction Log, containing a record of every operation
 performed in the database, so that they can perform crash
 recovery. The problem is that the size of that log is finite, and over
-time, it fills up, thus forcing Long-Lived Transactions to abort,
-because some of their log records will be overwritten by more recent
+time, it fills up, thus forcing Long-Lived Transactions to abort, as
+some of their log records will be overwritten by more recent
 transactions.
 
 In \cite{hagmann1991implementing}, the authors propose ``Log Record
@@ -667,9 +667,8 @@ activities such as meetings and decision making.
 In this document I shall use an abstract model to describe Workflow
 Processes, using the following concepts:
 \begin{itemize}
-\item {\bf Process} is a description of the sequence of steps
-  necessary to achieve a goal. A process consists of activities and
-  data.
+\item {\bf Process} is a sequence of steps necessary to achieve a
+  goal. A process consists of activities and data.
 \item {\bf Activity} is each step within a process. Activities have a
   name, pre and post-conditions, and a series of constraints.
 \item {\bf Control Flow} is the order in which activities are
@@ -788,7 +787,7 @@ Java Persistence API (JPA) and Java Data Objects (JDO). Both
 specifications allow a programmer to create domain entities by
 decorating Plain Old Java Objects (POJOs) with annotations, making the
 persistence layer transparent to the programmer. Whereas JDO provides
-a larger number of features then JPA, the latter has seen greater
+a larger number of features than JPA, the latter has seen greater
 adoption by the community, both in terms of usage and support.
 
 The most well-known implementations of the JPA are Hibernate,
@@ -796,7 +795,7 @@ DataNucleus, OpenJPA and EclipseLink. Other ORM tools include
 DatabaseObjects (.NET), NHibernate (Hibernate for .NET), CoreData
 (Objective-C), CodeIgniter (PHP) and Django (Python).
 
-To provide transactional support for domain objects, ORM's typically
+To provide transactional support for domain objects, ORMs typically
 delegate transaction management to the underlying Database (which is
 assumed to provide full ACID support). In fact, as of this writing,
 all the examples shown above operate this way. Thus, Long-Lived
@@ -932,7 +931,7 @@ limitation, allowing for better composability.
 In the transaction paradigm, it would then be common for application
 code to make a call to a library which uses transactions to protect
 its shared internal state. In this scenario, the transaction created
-for by library would be {\it nested} in the outer
+by library would be {\it nested} in the outer
 (application-``owned'') transaction. Nested Transactions are an
 extension to the basic transaction structure, supporting multiple
 levels of transactions: transactions that may contain other
@@ -1187,9 +1186,8 @@ they may be, Transactional Contexts are not business operations.
 
 The main idea is that every business operation that has transactional
 requirements should execute within a transactional context. But due to
-the fact that the operation may have several steps, we must keep
-track of Transactional Context, so it is used in all steps of the
-operation.
+the fact that the operation may have several steps, we must keep track
+of Transactional Context, so it is used in all steps of the operation.
 
 Given that manually keeping track of the context can be cumbersome,
 and should be done transparently, a new concept is introduced: {\bf
@@ -1198,7 +1196,7 @@ Figure~\ref{fig:TBO}, a TBO not only is a first-class entity that
 represents a particular business operation, but also holds its
 transactional context. The TBO is then responsible for
 \begin{inparaenum}[\itshape 1\upshape)]
-\item managing the life-cycle of the Transactional Context, and 
+\item managing the life-cycle of the Transactional Context, and
 \item ensuring that the several steps of the operation execute within
   the operation's context.
 \end{inparaenum}
