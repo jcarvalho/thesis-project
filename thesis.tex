@@ -22,14 +22,12 @@
   more and more popular, growing to be something more than simply a
   research topic. On top of that, the concept has been extended to
   encompass persistence, so the concept of Persistent Software
-  Transactional Memories (PSTM) was born. In this thesis, I propose an
+  Transactional Memories (PSTM) was born. In this project, I propose an
   extension to PSTMs to support the concept of Long-Lived
-  Transactions. Some research on the topic has been conducted in the
-  field of Database Transactions and Workflow systems. My thesis is
-  that supporting Long-Lived Transactions should be done at the
-  infrastructural level on Persistent STMs, so this paper will
-  describe how those systems can be extended to support Long-Lived
-  Transactions.
+  Transactions. My thesis is that supporting Long-Lived Transactions
+  should be done at the infrastructural level on Persistent STMs, so
+  I will describe how those systems can be extended to
+  support Long-Lived Transactions.
 \end{abstract}
 
 %% Intro
@@ -42,8 +40,7 @@ mainframe with great computational power.
 
 Long-Lived Transactions were first described in 1981 as ``[..]
 transactions with lifetimes of a few days or
-weeks''\cite{gray1981transaction}. At the time, the author said that
-the solution for this
+weeks''\cite{gray1981transaction}. 
 
 -- starts here for now --
 
@@ -1026,6 +1023,11 @@ business requirements to code much simpler and bug-free.
 In this project, I aim at extending the PSTM model, by adding the
 necessary building blocks to support Long-Lived Transactions
 (described in Section~\ref{sec:arch}).
+
+\subsection{}
+
+Among all the solutions presented above, one common aspect stands out:
+all solutions require the programmer to 
 
 \section{Solution Architecture}
 \label{sec:arch}
