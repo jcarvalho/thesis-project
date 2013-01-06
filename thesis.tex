@@ -150,7 +150,7 @@ persistent and available for other users to view.
 
 In this scenario, in which all the information can be provided in a
 single user interaction, the transactional guarantees of the operation
-are assured by the underlying database (which is assumed to provide
+are ensured by the underlying database (which is assumed to provide
 the classic transactional semantics \cite{gray1981transaction}),
 because the whole operation can be performed within the scope of a
 single database transaction.
@@ -632,7 +632,7 @@ properties are broken when using several system transactions.
   granularities (which will have different impacts on system
   performance). In this pattern, whenever a business transaction
   wishes to access a record (for either read or write), it must
-  acquire a lock with the lock manager, assuring that a business
+  acquire a lock with the lock manager, ensuring that a business
   transaction that wishes to write for that particular record is the
   only one doing so.
 \end{itemize}
@@ -909,7 +909,7 @@ levels (or correctness criteria) that can be found in DBMS. In
 \cite{guerraoui2008correctness}, the author claims that the {\it
   traditional} correctness criteria are unfit for TM implementations,
 and proposes the {\it opacity} criterion. Opacity is described as a
-safety property that assures that ``[...] (1) all operations performed
+safety property that ensures that ``[...] (1) all operations performed
 by every {\it committed} transaction appear as if they happened at
 some single, indivisible point during the transaction lifetime, (2) no
 operation performed by any {\it aborted} transaction is ever visible
@@ -1068,17 +1068,26 @@ of the operation.
     \begin{abstractclass}[text width=3cm]{DomainObject}{8,0}
     \end{abstractclass}
 
-    \draw[umlcd style school] (DomainObject) |-node[below, sloped,
-    black]{object} (Log);
+    \draw [umlcd style school] (TransactionalContext) |- 
+    node[below]{Read Set} (Log)
+    node[near start, left]{1}
+    node[near end, below]{*};
 
-    \draw[umlcd style school] (DomainObject) -| node[above, black]
-    {value} (Log);
+    \draw [umlcd style school] (TransactionalContext) --    
+    node[right]{Write Set} (Log)
+    node[near start, above]{1}
+    node[near end, right]{*};
 
-    \draw[umlcd style school] (TransactionalContext) |- node[below,
-    black] {readSet} (Log);
+    \draw [umlcd style school] (DomainObject) --
+    node[below]{{ }{ }Value} (Log)
+    node[near start, right]{{ }1}
+    node[near end, above]{1};
 
-    \draw[umlcd style school] (TransactionalContext) -- node[near
-    start, above, black]{1} (Log) node[near end, below, black]{1};
+    \draw [umlcd style school] (DomainObject) |-
+    node[below]{object} (Log)
+    node[near start, right]{1}
+    node[near end, below]{*};
+
   \end{tikzpicture}
 
   \caption{Transactional Context}
@@ -1224,10 +1233,10 @@ transactional context. The TBO is then responsible for
 Instantiating a TBO will also instantiate its associated transactional
 context. For a method to execute within the context associated to the
 TBO, the programmer must simply annotate the method with the @Step
-annotation. This will assure that any invocations of the method will
+annotation. This will ensure that any invocations of the method will
 execute within the context of that
 operation. Listing~\ref{lst:tcMethod} shows the pseudo-code that will
-be injected in the methods to assure this property. The methods
+be injected in the methods to ensure this property. The methods
 getCurrentTC() and setCurrentTC() allow access and modification of the
 current transactional context, which may be stored in a thread-local
 variable.
