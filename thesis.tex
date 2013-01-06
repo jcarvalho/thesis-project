@@ -23,7 +23,7 @@
   research topic. On top of that, the concept has been extended to
   encompass persistence, so the concept of Persistent Software
   Transactional Memories (PSTM) was born. In this thesis, I propose an
-  extension to PSTM's in order to support the concept of Long-Lived
+  extension to PSTM's to support the concept of Long-Lived
   Transactions. Some research on the topic has been conducted in the
   field of Database Transactions and Workflow systems. My thesis is
   that supporting Long-Lived Transactions should be done at the
@@ -76,9 +76,9 @@ Transaction, attempting to motivate why a new approach is needed.
 \label{sec:what}
 
 As previously described, Long-Lived Transactions are transactions with
-a lifetime larger than a typical database transaction. In order to
-better understand this concept, consider the following example, found
-in the applications of many education institutions.
+a lifetime larger than a typical database transaction. To better
+understand this concept, consider the following example, found in the
+applications of many education institutions.
 
 \begin{figure}
   \centering
@@ -183,7 +183,7 @@ objectives and credits, and in the final interaction, the user selects
 the bibliography, thus creating the course.
 
 At first glance, it would seem quite easy for a programmer to change
-the logic programmed in the first scenario, in order to meet the new
+the logic programmed in the first scenario to meet the new
 requirements: the programmer would simply have to split the code
 performed in a single request into three smaller parts, one to be
 executed in each request.
@@ -334,10 +334,10 @@ Long-Lived Transactions.
 
 The example provided above is targeted at applications with a rich
 domain model, but there are many applications built directly on top of
-DBMS's. Those applications typically have requirements similar to
-those with a rich domain model, however, they must rely directly on
-the DBMS for transactional support, and thus, it becomes clear that
-DBMSs should support Long-Lived Transactions.
+DBMSs. Those applications typically have requirements similar to those
+with a rich domain model, however, they must rely directly on the DBMS
+for transactional support, and thus, it becomes clear that DBMSs
+should support Long-Lived Transactions.
 
 \subsubsection{Workflow Systems}
 
@@ -411,17 +411,17 @@ properties:
 \subsubsection{Isolation Levels}
 \label{sec:isolation}
 
-In order to better understand the desired isolation level of a
-Long-Lived Transaction support system, an analysis of the most common
-isolation levels is in order.
+To better understand the desired isolation level of a Long-Lived
+Transaction support system, an analysis of the most common isolation
+levels is in order.
 
 Attaining full isolation between transactions, while seemingly
 necessary, can oftentimes be a burden to the DBMS, due to the required
 overhead. Thus, isolation is, out of the four ACID properties, the one
 most often relaxed. Isolation is typically implemented using Locks or
 Multiversion concurrency control, which may result in a loss of
-concurrency. In order to cope with that fact, several standard
-isolation levels have been defined.
+concurrency. To cope with that fact, several standard isolation levels
+have been defined.
 
 In the ANSI/ISO SQL standard\cite{melton1992ansi}, four isolation
 levels have been defined (from most to least relaxed):
@@ -547,12 +547,13 @@ a consistent database state.
 
 \subsubsection{Transaction Logs}
 
-Another issue with Long-Lived Transaction in DBMSs is due to the fact
-that, in order to perform crash recovery, they use a Transaction Log,
-containing a record of every operation performed in the database. The
-size of said log is finite, and over time, the log fills up. Old
-Long-Lived Transactions must be aborted because some of their log
-records will be overwritten by more recent transactions.
+Another problem with Long-Lived Transactions in DBMSs results from the
+use of a Transaction Log, containing a record of every operation
+performed in the database, so that they can perform crash
+recovery. The problem is that the size of that log is finite, and over
+time, it fills up, thus forcing Long-Lived Transactions to abort,
+because some of their log records will be overwritten by more recent
+transactions.
 
 In \cite{hagmann1991implementing}, the authors propose ``Log Record
 Forwarding'', as a means to relocate log entries belonging to
@@ -653,8 +654,8 @@ programmer.
 
 A Workflow Process is described as a sequence of connected steps (or
 activities), with special emphasis on the on the flow paradigm, where
-each step of the process follows the precedent with no gap, and ends
-just before the next step can begin.
+each step of the process follows the precedent, and ends just before
+the next step can begin.
 
 A Workflow Process typically has a long duration, involves many users
 (in fact, each step is typically executed by a different user), and
@@ -794,19 +795,19 @@ DataNucleus, OpenJPA and EclipseLink. Other ORM tools include
 DatabaseObjects (.NET), NHibernate (Hibernate for .NET), CoreData
 (Objective-C), CodeIgniter (PHP) and Django (Python).
 
-In order to provide transactional support for domain objects, ORM's
-typically delegate transaction management to the underlying Database
-(which is assumed to provide full ACID support). In fact, as of this
-writing, all the examples shown above operate this way. Thus,
-Long-Lived Transaction support in ORM tools is largely dependent on
-the underlying DBMS, presenting the same challenges as described in
+To provide transactional support for domain objects, ORM's typically
+delegate transaction management to the underlying Database (which is
+assumed to provide full ACID support). In fact, as of this writing,
+all the examples shown above operate this way. Thus, Long-Lived
+Transaction support in ORM tools is largely dependent on the
+underlying DBMS, presenting the same challenges as described in
 \ref{sec:rdbms}.
 
 Given the popularity of Java, I will now focus on the JPA, and one of
-its most popular implementations, Hibernate, in order to understand
-how they cope with Long Lived Transactions. Note that despite the
-concreteness of the examples presented, their concepts are generic
-enough to be applied to any other ORM tool.
+its most popular implementations, Hibernate, to understand how they
+cope with Long Lived Transactions. Note that despite the concreteness
+of the examples presented, their concepts are generic enough to be
+applied to any other ORM tool.
 
 \subsubsection{JPA Optimistic Concurrency Control}
 
@@ -1086,11 +1087,11 @@ of the operation.
 \end{figure}
 
 Figure~\ref{fig:transactionalContext} presents the conceptual model of
-the Transactional Context. Because it is a first-class entity, it can be
-manipulated just like any other domain object. Its purpose is to keep
-all the changes made to the domain objects during the transaction,
-keeping those changes isolated from code executing outside this
-context.
+the Transactional Context. Because it is a first-class entity, it can
+be manipulated just like any other domain object. Its purpose is to
+keep all the changes made to the domain objects during the
+transaction, keeping those changes isolated from code executing
+outside this context.
 
 The Transactional Context has two sets of {\bf Log}s representing both
 the read set and the write set of the transaction. A Log contains a
@@ -1108,10 +1109,10 @@ new value to the corresponding Log entry. It is important to note that
 there is at most one Log entry per object.
 
 Collaboration from the methods that get/set values of the domain
-objects is required, because those methods must be aware of the presence
-of the transactional context. Depending on whether the method performs
-a read or write operation, it must access the corresponding Log of the
-current context in order to read/modify the snapshot/copy of the
+objects is required, because those methods must be aware of the
+presence of the transactional context. Depending on whether the method
+performs a read or write operation, it must access the corresponding
+Log of the current context to read/modify the snapshot/copy of the
 object's attributes.
 
 Transactional contexts can be either aborted or committed. Aborting a
@@ -1140,8 +1141,8 @@ the infrastructural code needed to transparently handle object
 persistence.
 
 Transactional support is guaranteed by the JVSTM
-\cite{cachopo2006versioned}, a multi-version lock-free STM. The STM is
-based upon the concept of versioned boxes, which keep a history of the
+\cite{cachopo2006versioned}, a multi-version STM. The STM is based
+upon the concept of versioned boxes, which keep a history of the
 values of the application's shared mutable state. It was designed to
 operate in environments with a high read/write ratio, so, unlike other
 STMs, read-only transactions never conflict with any other concurrent
@@ -1186,8 +1187,8 @@ the fact that the operation may have several steps, one must keep
 track of Transactional Context, so it is used in all steps of the
 operation.
 
-Given that manually keeping track of the context can be cumbersome, and
-should be done transparently, a new concept is introduced: {\bf
+Given that manually keeping track of the context can be cumbersome,
+and should be done transparently, a new concept is introduced: {\bf
   Transactional Business Operation} (TBO). As shown in
 Figure~\ref{fig:TBO}, a TBO not only is a first-class entity that
 represents a particular business operation, but also holds its
@@ -1221,10 +1222,10 @@ transactional context. The TBO is then responsible for
 \subsubsection{Instantiating a new TBO}
 
 Instantiating a TBO will also instantiate its associated transactional
-context. In order for a method to execute within the context
-associated to the TBO, the programmer must simply annotate the method
-with the @Step annotation. This will assure that any invocations of
-the method will execute within the context of that
+context. For a method to execute within the context associated to the
+TBO, the programmer must simply annotate the method with the @Step
+annotation. This will assure that any invocations of the method will
+execute within the context of that
 operation. Listing~\ref{lst:tcMethod} shows the pseudo-code that will
 be injected in the methods to assure this property. The methods
 getCurrentTC() and setCurrentTC() allow access and modification of the
@@ -1337,8 +1338,8 @@ public class CourseCreationOperation
 Even in short transactions, the probability of conflicts is directly
 proportional to the number of records accessed during the
 transaction. This issue is aggravated when dealing with Long-Lived
-Transactions, because the size of the Read Set and the Write Set tend to
-be larger than with short transactions.
+Transactions, because the size of the Read Set and the Write Set tend
+to be larger than with short transactions.
 
 Most of the time, not much work is lost if a short transaction aborts,
 and it is relatively simple to automatically restart the transaction
@@ -1383,10 +1384,9 @@ programmers with this issue.
 
 \section{Evaluation}
 
-In order to evaluate this work, I will measure the effort required to
-implement a long business transaction, comparing the currently
-available tools against the implementation of my proposed
-architecture.
+To evaluate this work, I will measure the effort required to implement
+a long business transaction, comparing the currently available tools
+against the implementation of my proposed architecture.
 
 I will also measure the effort required to refactor existing code, to
 use this new solution, by selecting a functionality in the FenixEDU
