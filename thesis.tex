@@ -169,9 +169,9 @@ the operation is committed.
 
 \subsubsection{Business Transaction across multiple interactions}
 
-The model described in the previous scenario, while simple and easy to
-implement, may not be suited for every situation. Imagine that instead
-of four attributes, Course had 50 attributes. It would then be
+The model described in the previous scenario, whereas simple and easy
+to implement, may not be suited for every situation. Imagine that
+instead of four attributes, Course had 50 attributes. It would then be
 unfeasible to ask the user to fill everything out in a single web
 page, so the logical solution would be to split the various attributes
 in multiple pages, accounting for multiple user interactions.
@@ -653,9 +653,9 @@ programmer.
 \subsection{Workflow Management Systems}
 
 A Workflow Process is described as a sequence of connected steps (or
-activities), with special emphasis on the on the flow paradigm, where
-each step of the process follows the precedent, and ends just before
-the next step can begin.
+activities), with special emphasis on the flow paradigm, where each
+step of the process follows the precedent, and ends just before the
+next step can begin.
 
 A Workflow Process typically has a long duration, involves many users
 (in fact, each step is typically executed by a different user), and
@@ -803,7 +803,7 @@ Transaction support in ORM tools is largely dependent on the
 underlying DBMS, presenting the same challenges as described in
 \ref{sec:rdbms}.
 
-Given the popularity of Java, I will now focus on the JPA, and one of
+Given the popularity of Java, I will now consider the JPA, and one of
 its most popular implementations, Hibernate, to understand how they
 cope with Long Lived Transactions. Note that despite the concreteness
 of the examples presented, their concepts are generic enough to be
@@ -1117,10 +1117,10 @@ object's attributes.
 
 Transactional contexts can be either aborted or committed. Aborting a
 transactional context simply discards all associated Log entries,
-while committing atomically merges the Write Set with the domain. This
-operation must obey to the same consistency rules as any regular
-transaction, all objects in both Sets must be in a consistent state
-with the objects outside the context.
+whereas committing atomically merges the Write Set with the
+domain. This operation must obey to the same consistency rules as any
+regular transaction, all objects in both Sets must be in a consistent
+state with the objects outside the context.
 
 \subsection{Fenix Framework}
 
