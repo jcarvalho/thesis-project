@@ -43,17 +43,21 @@ are developed using a three-tier architecture: Data Tier, Application
 Tier and Presentation Tier. Despite this separation, most applications
 still rely on the Data Tier for transactional support.
 
-With the adoption of multicore architectures, {\it Software
-  Transactional Memory} (STM) has seen many advancements over the past
-years, and enterprise applications are now beginning to use them for
-transactional support \cite{fernandes2011strict}, instead of relying
-on the Database.
+With the adoption of multicore architectures over the past few years,
+{\it Software Transactional Memory} (STM) has seen many advancements.
+Because data persistency is a critical requirement in enterprise
+applications, STMs have been extended to collaborate with persistent
+storage systems, giving birth to the concept of {\it Persistent
+  Software Transactional Memory} \cite{fernandes2011strict}. Thus,
+several enterprise applications, such as the FenixEDU web application,
+are now using PSTMs for transactional support.
 
 Long-Lived Transactions were first described in 1981 as ``[..]
 transactions with lifetimes of a few days or
-weeks''\cite{gray1981transaction}. Many enterprise applications have
-requirements for such transactions, and thus, several approaches were
-devised to cope with them, as described in Section~\ref{sec:related}.
+weeks''\cite{gray1981transaction}, and can be found in many enterprise
+applications. Due to their duration, Long-Lived Transactions pose some
+challenges not encountered in short transactions, and thus, many
+attempts have been made to support them.
 
 My thesis consists on making Long-Lived Transactions easier to develop
 on top of a Persistent STM, by providing infrastructural-level
@@ -85,7 +89,9 @@ and support, as well as explain why they are not suited for our
 requirements. In Section 4, I present the architecture of my solution,
 and describe the Fenix Framework, which will be the base for this
 work. In Section 5, I explain how the implementation will be
-evaluated. Finally, in Section 6, I shall draw some conclusions.
+evaluated. 
+
+Finally, in Section 6, I shall draw some conclusions.
 
 \section{Long-Lived Transactions}
 
