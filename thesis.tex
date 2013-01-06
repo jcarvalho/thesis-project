@@ -337,8 +337,7 @@ The example provided above is targeted at applications with a rich
 domain model, but there are many applications built directly on top of
 DBMSs. Those applications typically have requirements similar to those
 with a rich domain model, however, they must rely directly on the DBMS
-for transactional support, and thus, it becomes clear that DBMSs
-should support Long-Lived Transactions.
+for transactional support.
 
 \subsubsection{Workflow Systems}
 
@@ -368,8 +367,8 @@ programmer from this burden.
 
 In this section I describe the various topics in which an attempt to
 solve the problem of Long Lived Transactions has been made, namely
-Database Management Systems, Workflow Systems, and Object Oriented
-Transactional Systems.
+Database Management Systems, Workflow Systems, and Object/Relational
+Mapping Systems.
 
 Also, due to its relevance regarding the solution described in section
 4, I briefly present Software Transactional Memories (STM), Nested
@@ -648,8 +647,8 @@ of a conflict is too high, no matter its likelihood, this is the
 appropriate pattern.
 
 Although with the use of these patterns the development of Long-Lived
-Transactions is facilitated, they still require reasoning from the
-programmer.
+Transactions is facilitated, they require the programmer to pollute
+the domain by adding code that should be in an infrastructural level.
 
 \subsection{Workflow Management Systems}
 
@@ -896,11 +895,11 @@ STMs use transactions to isolate memory operations in atomic Units of
 Work. A transaction typically contains a Read Set and Write Set, used
 to register its read and write operations, respectively. The STM
 provides a series of mutable memory locations that can be read from or
-written to. It is up to the programmer to confine all of the
-application's mutable state to these memory locations, while it is the
-responsibility of the STM to guarantee that concurrent accesses to
-such memory locations are correct according to the specified
-correctness criteria.
+written to. In many STMs, it is up to the programmer to confine all of
+the application's mutable state to these memory locations, whereas
+some STMs provide fully transactional memory. It is the responsibility
+of the STM to guarantee that concurrent accesses to such memory
+locations are correct according to the specified correctness criteria.
 
 \subsubsection{Correctness Criteria}
 
@@ -931,13 +930,13 @@ limitation, allowing for better composability.
 In the transaction paradigm, it would then be common for application
 code to make a call to a library which uses transactions to protect
 its shared internal state. In this scenario, the transaction created
-by library would be {\it nested} in the outer
-(application-``owned'') transaction. Nested Transactions are an
-extension to the basic transaction structure, supporting multiple
-levels of transactions: transactions that may contain other
-sub-transactions, forming a transaction tree. Nested Transactions have
-been long used in the database world, and many of its concepts have
-been adapted to transactional memories \cite{worah1997transactions}.
+by library would be {\it nested} in the outer (application-``owned'')
+transaction. Nested Transactions are an extension to the basic
+transaction structure, supporting multiple levels of transactions:
+transactions that may contain other sub-transactions, forming a
+transaction tree. Nested Transactions have been long used in the
+database world, and many of its concepts have been adapted to
+transactional memories \cite{worah1997transactions}.
 
 Consider the kind of monolithic transactions commonly found in
 enterprise applications. In such transactions, the volume of work that
