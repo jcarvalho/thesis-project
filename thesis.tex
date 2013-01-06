@@ -111,7 +111,7 @@ for managing its courses, meaning that it is up to someone who works
 in the department to start the process of creating new courses.
 
 Note that the creation of a new course should be executed
-transactionally, since it is not desired that other users of the
+transactionally, because it is not desired that other users of the
 system are able to see a course in an inconsistent state (either not
 connected to any departement and/or without all attributes properly
 defined).
@@ -151,9 +151,9 @@ persistent and available for other users to view.
 In this scenario, in which all the information can be provided in a
 single user interaction, the transactional guarantees of the operation
 are assured by the underlying database (which is assumed to provide
-the classic transactional semantics \cite{gray1981transaction}), since
-the whole operation can be performed within the scope of a single
-database transaction.
+the classic transactional semantics \cite{gray1981transaction}),
+because the whole operation can be performed within the scope of a
+single database transaction.
 
 An important consequence of implementing the operation in a single
 database transaction is that the programmer can manipulate all the
@@ -195,7 +195,7 @@ would be in an inconsistent state (a course with no attributes but its
 name).
 
 The implementation of the business logic must then take this issue
-into account, since the programmer cannot write the updates directly
+into account, because the programmer cannot write the updates directly
 on the domain, requiring manual handling.
 
 This scenario represents what was defined as a Long-Lived Transaction,
@@ -222,8 +222,8 @@ The programmer has then several choices for the implementation:
 
 \item Change the domain model, to represent the consistency state of
   the objects being manipulated. This affects the code that operates
-  on that portion of the domain, since it must filter objects that are
-  still in an inconsistent state.
+  on that portion of the domain, because it must filter out objects
+  that are still in an inconsistent state.
 \end{enumerate}
 
 It should be clear that any of those solutions is far from trivial to
@@ -238,7 +238,7 @@ transaction, one could think the solution would be to keep the
 database transaction open during the whole business transaction.
 
 However, most modern RDBMs do not cope well with transactions that are
-open for arbitrarily large periods of time, since a long lived
+open for arbitrarily large periods of time, because a long lived
 database transaction may limit concurrency, cause timeouts and
 deadlocks or starve the database's connection pool. All these factors
 contribute to making this approach highly undesirable, making the
@@ -286,7 +286,7 @@ indicates whether the course is in a consistent state (Published) or
 not (Draft). Adding this attribute has a cost, not only the domain is
 'polluted' with information that is not relevant to the object being
 modeled, but has impact on other functional code across the
-application, since course listings must filter out courses that are
+application, because course listings must filter out courses that are
 still in the Draft status, scattering the filtering code throughout
 the application.
 
@@ -317,8 +317,8 @@ the application.
 There are other approaches to Long-Lived Transactions, such as using
 the Database. There are some DBMSs that announce support for
 Long-Lived Transactions, such as Oracle's Workspace Manager. However,
-uch support is not standardized, their API's are proprietary,
-rendering Web frameworks unusable in those cases (since they generally
+such support is not standardized, their API's are proprietary,
+rendering Web frameworks unusable in those cases (they generally
 support only the SQL standard), forcing the application to be written
 against the proprietary API, making it very hard to change and
 maintain. All these factors contribute to make this approach
@@ -486,11 +486,11 @@ There are two main categories of Concurrency Control:
 
 \item {\bf Optimistic} Delaying integrity checking until the end of
   the transaction, without blocking any of its reads and writes.
-  Optimistic concurrency control allows for greater concurrency, since
-  concurrent operations can proceed without interfering with each
-  other. On the other hand, given that integrity is only checked in
-  the end of the transaction, conflicts are not detected until all the
-  work is done and the transaction has to be restarted. It is
+  Optimistic concurrency control allows for greater concurrency,
+  because concurrent operations can proceed without interfering with
+  each other. On the other hand, given that integrity is only checked
+  in the end of the transaction, conflicts are not detected until all
+  the work is done and the transaction has to be restarted. It is
   typically implemented by Multiversion Concurrency Control and
   Timestamp Ordering mechanisms\cite{Bernstein1981}.
 
@@ -528,8 +528,9 @@ In \cite{gray1981transaction}, the author proposed a model in which
 only {\it active} transactions (the ones currently updating the
 database) hold locks. {\it Sleeping} transactions (not currently
 updating the database - also known as {\it User think-time}) do not
-hold any locks. This means that the isolation property is broken,
-since other transactions will be able to see an uncommitted value.
+hold any locks. This means that the isolation property is broken, due
+to the fact that other transactions will be able to see an uncommitted
+value.
 
 In \cite{salem1989altruistic}, the authors propose an extension to
 Two-Phase locking, called {\it altruistic locking}. This extension
@@ -550,7 +551,7 @@ Another issue with Long-Lived Transaction in DBMSs is due to the fact
 that, in order to perform crash recovery, they use a Transaction Log,
 containing a record of every operation performed in the database. The
 size of said log is finite, and over time, the log fills up. Old
-Long-Lived Transactions must be aborted since some of their log
+Long-Lived Transactions must be aborted because some of their log
 records will be overwritten by more recent transactions.
 
 In \cite{hagmann1991implementing}, the authors propose ``Log Record
@@ -639,7 +640,7 @@ Typically {\bf Optimistic Offline Lock}s are used in an environment
 where conflicts are expected to be low. If conflicts are likely, it is
 not good user experience to report a conflict after the user finished
 his work and is ready to commit. In that case, a {\bf Pessimistic
-  Offline Lock} is in order, avoiding throwing away work, since
+  Offline Lock} is in order, avoiding throwing away work, because
 conflicts can be detected early in the transaction. Also, if the cost
 of a conflict is too high, no matter its likelihood, this is the
 appropriate pattern.
@@ -705,7 +706,7 @@ processes. It is the WFMS that provides the transactional properties
 to the transactional workflow. These include transaction management
 techniques such as logging, compensation, etc.
 
-Since their support for recovery and failure handling is lacking,
+Given that their support for recovery and failure handling is lacking,
 unlike regular transaction systems, they typically provide the means
 for the user to determine the actions necessary to recover from
 failure and consistency issues.
@@ -922,7 +923,7 @@ criteria is ensured by many TM systems.
 The best practices in software development encourage programmers to
 modularize their applications and have them abide by well-defined
 interfaces. Lock-based approaches do not cope well with this
-principle, since the programmer must be aware of module's internal
+principle, because the programmer must be aware of module's internal
 locking conventions. Transactions, on the other hand, do not have this
 limitation, allowing for better composability.
 
@@ -973,7 +974,7 @@ the results of committed sub-transactions visible to other
 concurrently running transactions. When a sub-transaction commits,
 instead of merging the write set with its parent's, the writes are
 committed at the top-level. This way, a higher degree of concurrency
-is achieved, since resources may be released earlier and conflict
+is achieved, because resources may be released earlier and conflict
 detection can be applied at a higher level. It is up to the
 implementations to provide the mechanisms to handle recording of
 necessary compensating actions in case an ancestor transaction aborts.
@@ -1085,7 +1086,7 @@ of the operation.
 \end{figure}
 
 Figure~\ref{fig:transactionalContext} presents the conceptual model of
-the Transactional Context. Since it is a first-class entity, it can be
+the Transactional Context. Because it is a first-class entity, it can be
 manipulated just like any other domain object. Its purpose is to keep
 all the changes made to the domain objects during the transaction,
 keeping those changes isolated from code executing outside this
@@ -1107,7 +1108,7 @@ new value to the corresponding Log entry. It is important to note that
 there is at most one Log entry per object.
 
 Collaboration from the methods that get/set values of the domain
-objects is required, since those methods must be aware of the presence
+objects is required, because those methods must be aware of the presence
 of the transactional context. Depending on whether the method performs
 a read or write operation, it must access the corresponding Log of the
 current context in order to read/modify the snapshot/copy of the
@@ -1185,7 +1186,7 @@ the fact that the operation may have several steps, one must keep
 track of Transactional Context, so it is used in all steps of the
 operation.
 
-Since manually keeping track of the context can be cumbersome, and
+Given that manually keeping track of the context can be cumbersome, and
 should be done transparently, a new concept is introduced: {\bf
   Transactional Business Operation} (TBO). As shown in
 Figure~\ref{fig:TBO}, a TBO not only is a first-class entity that
@@ -1296,7 +1297,7 @@ being created.
 An implementation of the {\bf CourseCreationOperation} class is
 presented in Listing~\ref{lst:courseTBO}. Each step of the user
 interaction is implemented in a single method, annotated with
-@Step. Since defining the bibliography is the last step of the
+@Step. Because defining the bibliography is the last step of the
 operation, the 'setBibliography()' is annotated with 'last = true',
 meaning that after its invocation, the operation will attempt to
 commit, making the new course visible to every other user in the
@@ -1336,7 +1337,7 @@ public class CourseCreationOperation
 Even in short transactions, the probability of conflicts is directly
 proportional to the number of records accessed during the
 transaction. This issue is aggravated when dealing with Long-Lived
-Transactions, since the size of the Read Set and the Write Set tend to
+Transactions, because the size of the Read Set and the Write Set tend to
 be larger than with short transactions.
 
 Most of the time, not much work is lost if a short transaction aborts,
