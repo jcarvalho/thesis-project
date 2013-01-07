@@ -800,6 +800,7 @@ Section~\ref{sec:what}, due to the fact that most WFMSs do not provide
 full ACID properties.
 
 \subsection{Object/Relational Mapping}
+\label{sec:orm}
 
 Due to the increase in popularity of object-oriented programming, a
 large number of Object/Relational Mapping (ORM) tools have arisen over
@@ -1057,10 +1058,28 @@ In this project, I aim at extending the PSTM model, by adding the
 necessary building blocks to support Long-Lived Transactions
 (described in Section~\ref{sec:arch}).
 
-\subsection{}
+\subsection{Why those solutions are unfit}
 
 Among all the solutions presented above, one common aspect stands out:
-all solutions require the programmer to 
+they all require the programmer to deal with Long-Lived Transactions
+at the application level, which goes against my claim that support
+should be transparent, and at an infrastructural level.
+
+Some of the presented solutions are based on relaxation of
+transactional properties, such as allowing breaches in
+isolation. Long-Lived Transactions should run with the same
+transactional properties as regular transactions, and thus, relaxation
+is not acceptable.
+
+Despite the similarities between Workflow Processes and Long-Lived
+Transactions, WFMSs are not suited for our requirements. Typical WFMSs
+are not concerned with the ACID properties of transactions, and rely
+heavily on high-level compensatory actions for data consistency.
+
+The solution proposed in Section~\ref{sec:orm} (Hibernate) imposes a
+very strict programming model, that may not be adequate for some
+applications, and does not guarantee that Long-Lived Transactions will
+have the same transactional properties as regular transactions.
 
 \section{Solution Architecture}
 \label{sec:arch}
